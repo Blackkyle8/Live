@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One AI - AI 커뮤니티</title>
+    <style>
+        :root {
+            /* Modern Color System */
+            --color-surface-base: #000000;
+            --color-surface-elevated: #111111;
+            --color-surface-modal: #222222;
+            --color-surface-overlay: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+            --text-quaternary: #737373;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            
+            /* Typography */
+            --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-size-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem);
+            --font-size-sm: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
+            --font-size-base: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);
+            --font-size-lg: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);
+            --font-size-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+            
+            /* Spacing */
+            --space-xs: clamp(0.75rem, 0.6rem + 0.6vw, 1.125rem);
+            --space-sm: clamp(1rem, 0.8rem + 0.8vw, 1.5rem);
+            --space-md: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+            --space-lg: clamp(2rem, 1.6rem + 1.6vw, 3rem);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-primary);
+            background: var(--color-surface-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
+        }
+
+        /* 상단 헤더 스타일 추가 */
+        .header {
+            background: #111;
+            border-bottom: 1px solid #333;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(255,255,255,0.1);
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-right: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            background: #222;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            color: #fff;
+        }
+
+        .btn:hover {
+            background: #333;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #f0f0f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-md);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* 헤더 */
+        .community-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+            background: linear-gradient(135deg, var(--color-surface-elevated), var(--color-surface-modal));
+            border-radius: 16px;
+            padding: var(--space-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .community-title {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .community-subtitle {
+            color: var(--text-secondary);
+            font-size: var(--font-size-base);
+            max-width: 600px;
+            margin: 0 auto var(--space-md);
+        }
+
+        .upload-btn {
+            background: var(--color-primary-500);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-btn:hover {
+            background: var(--color-primary-600);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25);
+        }
+
+        /* 필터 및 검색 */
+        .filter-section {
+            background: var(--color-surface-elevated);
+            border-radius: 12px;
+            padding: var(--space-sm);
+            margin-bottom: var(--space-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            background: var(--color-surface-modal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-primary-500);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+        }
+
+        .filter-select {
+            background: var(--color-surface-modal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--color-primary-500);
+        }
+
+        .sort-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .sort-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-tertiary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: var(--font-size-xs);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sort-btn:hover,
+        .sort-btn.active {
+            background: var(--color-primary-500);
+            color: white;
+            border-color: var(--color-primary-500);
+        }
+
+        /* 콘텐츠 그리드 */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(350px, 100%), 1fr));
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+            width: 100%;
+        }
+
+        .content-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .content-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .content-preview {
+            position: relative;
+            height: 200px;
+            background: var(--color-surface-modal);
+            overflow: hidden;
+        }
+
+        .content-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .content-type-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: var(--font-size-xs);
+            font-weight: 500;
+        }
+
+        .ai-engine-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            color: white;
+        }
+
+        .ai-engine-badge.gpt { background: linear-gradient(135deg, #10a37f, #1a7f72); }
+        .ai-engine-badge.midjourney { background: linear-gradient(135deg, #000, #333); }
+        .ai-engine-badge.claude { background: linear-gradient(135deg, #ff6b35, #f7931e); }
+        .ai-engine-badge.gemini { background: linear-gradient(135deg, #4285f4, #ea4335); }
+
+        .content-info {
+            padding: var(--space-sm);
+        }
+
+        .content-title {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .content-description {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .content-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .content-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        .author-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--color-primary-500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .content-stats {
+            display: flex;
+            gap: 16px;
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            color: #fbbf24;
+            font-size: 12px;
+        }
+
+        /* 트렌딩 섹션 */
+        .trending-section {
+            background: var(--color-surface-elevated);
+            border-radius: 12px;
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .trending-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .trending-list {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            width: 100%;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+        }
+
+        .trending-list::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .trending-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .trending-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .trending-tag {
+            background: var(--color-surface-modal);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: var(--font-size-sm);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .trending-tag:hover {
+            background: var(--color-primary-500);
+            color: white;
+            border-color: var(--color-primary-500);
+        }
+
+        /* 업로드 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--color-surface-elevated);
+            border-radius: 16px;
+            padding: var(--space-lg);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+
+        .modal-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            background: var(--color-surface-modal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-primary-500);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-upload {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: var(--space-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-upload:hover {
+            border-color: var(--color-primary-500);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .file-upload-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: var(--space-md);
+        }
+
+        .btn-cancel {
+            background: #333;
+            color: #999;
+            border: none;
+        }
+
+        .btn-cancel:hover {
+            color: #fff;
+            background: #444;
+        }
+
+        .btn-primary {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-600);
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+            
+            .container {
+                padding: var(--space-sm);
+            }
+            
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .filter-select {
+                width: 100%;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .trending-list {
+                flex-wrap: wrap;
+                overflow-x: visible;
+            }
+            
+            .trending-tag {
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 상단 헤더 추가 -->
+    <div class="header">
+        <div class="logo">
+            <span>One AI</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn" onclick="goBack()">뒤로 가기</button>
+            <button class="btn btn-primary" onclick="showUploadModal()">콘텐츠 업로드</button>
+            <button class="btn" onclick="goHome()">홈으로</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 커뮤니티 헤더 -->
+        <header class="community-header">
+            <h1 class="community-title">🌍 AI 커뮤니티</h1>
+            <p class="community-subtitle">
+                AI로 만든 창작물을 공유하고, 프롬프트 템플릿을 교환하며, 
+                전 세계 크리에이터들과 함께 성장하세요
+            </p>
+            <button class="upload-btn" onclick="showUploadModal()">
+                ⬆️ 콘텐츠 업로드
+            </button>
+        </header>
+
+        <!-- 트렌딩 섹션 -->
+        <section class="trending-section">
+            <h2 class="trending-title">
+                🔥 실시간 트렌딩
+            </h2>
+            <div class="trending-list">
+                <div class="trending-tag">#AI아트</div>
+                <div class="trending-tag">#프롬프트템플릿</div>
+                <div class="trending-tag">#코딩도우미</div>
+                <div class="trending-tag">#이미지생성</div>
+                <div class="trending-tag">#번역도구</div>
+                <div class="trending-tag">#디자인</div>
+                <div class="trending-tag">#글쓰기</div>
+                <div class="trending-tag">#음악생성</div>
+            </div>
+        </section>
+
+        <!-- 필터 및 검색 -->
+        <section class="filter-section">
+            <div class="filter-row">
+                <input type="text" class="search-input" placeholder="🔍 콘텐츠, 태그, 사용자 검색...">
+                
+                <select class="filter-select">
+                    <option value="">모든 AI 엔진</option>
+                    <option value="gpt">ChatGPT</option>
+                    <option value="midjourney">Midjourney</option>
+                    <option value="claude">Claude</option>
+                    <option value="gemini">Gemini</option>
+                    <option value="dalle">DALL-E</option>
+                </select>
+                
+                <select class="filter-select">
+                    <option value="">모든 카테고리</option>
+                    <option value="image">이미지</option>
+                    <option value="text">텍스트</option>
+                    <option value="code">코드</option>
+                    <option value="prompt">프롬프트</option>
+                    <option value="music">음악</option>
+                </select>
+                
+                <div class="sort-options">
+                    <button class="sort-btn active">최신순</button>
+                    <button class="sort-btn">인기순</button>
+                    <button class="sort-btn">평점순</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 콘텐츠 그리드 -->
+        <section class="content-grid">
+            <!-- 콘텐츠 카드 1 -->
+            <article class="content-card" onclick="viewContent(1)">
+                <div class="content-preview">
+                    <div style="background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">🎨</div>
+                    <div class="content-type-badge">이미지</div>
+                    <div class="ai-engine-badge midjourney">Midjourney</div>
+                </div>
+                <div class="content-info">
+                    <h3 class="content-title">미래도시 컨셉아트 시리즈</h3>
+                    <p class="content-description">사이버펑크 스타일의 미래도시를 그린 컨셉아트 모음집입니다. 네온사인과 고층빌딩이 어우러진 독특한 분위기를 연출했습니다.</p>
+                    <div class="content-meta">
+                        <div class="content-author">
+                            <div class="author-avatar">김</div>
+                            <span>김아티스트</span>
+                        </div>
+                        <div class="rating-stars">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                        </div>
+                    </div>
+                    <div class="content-stats">
+                        <div class="stat-item">
+                            <span>👁️</span>
+                            <span>2.3k</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>❤️</span>
+                            <span>156</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>💬</span>
+                            <span>24</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>📥</span>
+                            <span>89</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 콘텐츠 카드 2 -->
+            <article class="content-card" onclick="viewContent(2)">
+                <div class="content-preview">
+                    <div style="background: linear-gradient(45deg, #10a37f 0%, #1a7f72 100%); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📝</div>
+                    <div class="content-type-badge">프롬프트</div>
+                    <div class="ai-engine-badge gpt">ChatGPT</div>
+                </div>
+                <div class="content-info">
+                    <h3 class="content-title">완벽한 블로그 포스팅 프롬프트 템플릿</h3>
+                    <p class="content-description">SEO 최적화된 블로그 글을 작성할 수 있는 ChatGPT 프롬프트 모음입니다. 제목부터 본문, 메타 태그까지 한 번에!</p>
+                    <div class="content-meta">
+                        <div class="content-author">
+                            <div class="author-avatar">이</div>
+                            <span>이마케터</span>
+                        </div>
+                        <div class="rating-stars">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">☆</span>
+                        </div>
+                    </div>
+                    <div class="content-stats">
+                        <div class="stat-item">
+                            <span>👁️</span>
+                            <span>1.8k</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>❤️</span>
+                            <span>203</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>💬</span>
+                            <span>47</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>📥</span>
+                            <span>142</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 콘텐츠 카드 3 -->
+            <article class="content-card" onclick="viewContent(3)">
+                <div class="content-preview">
+                    <div style="background: linear-gradient(45deg, #ff6b35 0%, #f7931e 100%); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">💻</div>
+                    <div class="content-type-badge">코드</div>
+                    <div class="ai-engine-badge claude">Claude</div>
+                </div>
+                <div class="content-info">
+                    <h3 class="content-title">React 컴포넌트 자동 생성기</h3>
+                    <p class="content-description">Claude를 활용해 만든 React 컴포넌트 자동 생성 프롬프트입니다. 디자인 시스템 기반으로 일관된 컴포넌트를 생성할 수 있습니다.</p>
+                    <div class="content-meta">
+                        <div class="content-author">
+                            <div class="author-avatar">박</div>
+                            <span>박개발자</span>
+                        </div>
+                        <div class="rating-stars">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                        </div>
+                    </div>
+                    <div class="content-stats">
+                        <div class="stat-item">
+                            <span>👁️</span>
+                            <span>957</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>❤️</span>
+                            <span>89</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>💬</span>
+                            <span>15</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>📥</span>
+                            <span>76</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 콘텐츠 카드 4 -->
+            <article class="content-card" onclick="viewContent(4)">
+                <div class="content-preview">
+                    <div style="background: linear-gradient(45deg, #4285f4 0%, #ea4335 100%); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">🎵</div>
+                    <div class="content-type-badge">음악</div>
+                    <div class="ai-engine-badge gemini">Gemini</div>
+                </div>
+                <div class="content-info">
+                    <h3 class="content-title">로파이 힙합 작곡 가이드</h3>
+                    <p class="content-description">AI를 활용한 로파이 힙합 비트 제작 방법과 프롬프트를 공유합니다. 초보자도 쉽게 따라할 수 있는 단계별 가이드입니다.</p>
+                    <div class="content-meta">
+                        <div class="content-author">
+                            <div class="author-avatar">최</div>
+                            <span>최뮤지션</span>
+                        </div>
+                        <div class="rating-stars">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">☆</span>
+                        </div>
+                    </div>
+                    <div class="content-stats">
+                        <div class="stat-item">
+                            <span>👁️</span>
+                            <span>1.2k</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>❤️</span>
+                            <span>134</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>💬</span>
+                            <span>28</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>📥</span>
+                            <span>91</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 더 많은 콘텐츠 카드들... -->
+            <article class="content-card" onclick="viewContent(5)">
+                <div class="content-preview">
+                    <div style="background: linear-gradient(45deg, #e96443 0%, #904e95 100%); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">🎭</div>
+                    <div class="content-type-badge">이미지</div>
+                    <div class="ai-engine-badge midjourney">Midjourney</div>
+                </div>
+                <div class="content-info">
+                    <h3 class="content-title">환상적인 판타지 캐릭터 컬렉션</h3>
+                    <p class="content-description">RPG 게임에서 나올 법한 다양한 판타지 캐릭터들을 AI로 생성했습니다. 마법사, 전사, 도적 등 다양한 직업군을 포함합니다.</p>
+                    <div class="content-meta">
+                        <div class="content-author">
+                            <div class="author-avatar">정</div>
+                            <span>정게이머</span>
+                        </div>
+                        <div class="rating-stars">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                        </div>
+                    </div>
+                    <div class="content-stats">
+                        <div class="stat-item">
+                            <span>👁️</span>
+                            <span>3.1k</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>❤️</span>
+                            <span>287</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>💬</span>
+                            <span>52</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>📥</span>
+                            <span>198</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="content-card" onclick="viewContent(6)">
+                <div class="content-preview">
+                    <div style="background: linear-gradient(45deg, #2196F3 0%, #21CBF3 100%); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📊</div>
+                    <div class="content-type-badge">텍스트</div>
+                    <div class="ai-engine-badge gpt">ChatGPT</div>
+                </div>
+                <div class="content-info">
+                    <h3 class="content-title">데이터 분석 보고서 자동 생성 프롬프트</h3>
+                    <p class="content-description">Excel 데이터를 입력하면 전문적인 분석 보고서를 자동으로 생성해주는 ChatGPT 프롬프트입니다. 차트 설명과 인사이트까지!</p>
+                    <div class="content-meta">
+                        <div class="content-author">
+                            <div class="author-avatar">한</div>
+                            <span>한분석가</span>
+                        </div>
+                        <div class="rating-stars">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">☆</span>
+                        </div>
+                    </div>
+                    <div class="content-stats">
+                        <div class="stat-item">
+                            <span>👁️</span>
+                            <span>1.5k</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>❤️</span>
+                            <span>112</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>💬</span>
+                            <span>33</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>📥</span>
+                            <span>87</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </div>
+
+    <!-- 업로드 모달 -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">콘텐츠 업로드</h2>
+                <button class="modal-close" onclick="hideUploadModal()">&times;</button>
+            </div>
+            
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label class="form-label">제목</label>
+                    <input type="text" class="form-input" placeholder="콘텐츠 제목을 입력하세요" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">설명</label>
+                    <textarea class="form-textarea" placeholder="콘텐츠에 대한 자세한 설명을 입력하세요" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">AI 엔진</label>
+                    <select class="form-select" required>
+                        <option value="">사용한 AI 엔진을 선택하세요</option>
+                        <option value="gpt">ChatGPT</option>
+                        <option value="claude">Claude</option>
+                        <option value="gemini">Gemini</option>
+                        <option value="midjourney">Midjourney</option>
+                        <option value="dalle">DALL-E</option>
+                        <option value="stablediffusion">Stable Diffusion</option>
+                        <option value="other">기타</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">카테고리</label>
+                    <select class="form-select" required>
+                        <option value="">카테고리를 선택하세요</option>
+                        <option value="image">이미지</option>
+                        <option value="text">텍스트</option>
+                        <option value="code">코드</option>
+                        <option value="prompt">프롬프트</option>
+                        <option value="music">음악</option>
+                        <option value="video">비디오</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">태그</label>
+                    <input type="text" class="form-input" placeholder="#태그1 #태그2 #태그3 (띄어쓰기로 구분)">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">파일 업로드</label>
+                    <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                        <div class="file-upload-icon">📁</div>
+                        <p>클릭하여 파일을 선택하거나 여기에 드래그하세요</p>
+                        <p style="font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: 8px;">
+                            지원 형식: JPG, PNG, GIF, PDF, TXT, MD (최대 10MB)
+                        </p>
+                    </div>
+                    <input type="file" id="fileInput" style="display: none;" multiple accept=".jpg,.png,.gif,.pdf,.txt,.md">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">프롬프트 (선택사항)</label>
+                    <textarea class="form-textarea" placeholder="사용한 프롬프트를 공유해주세요 (다른 사용자들에게 도움이 됩니다)"></textarea>
+                </div>
+            </form>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn btn-cancel" onclick="hideUploadModal()">취소</button>
+                <button type="submit" class="btn btn-primary" onclick="uploadContent()">업로드</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showUploadModal() {
+            document.getElementById('uploadModal').classList.add('show');
+        }
+
+        function hideUploadModal() {
+            document.getElementById('uploadModal').classList.remove('show');
+        }
+
+        function uploadContent() {
+            alert('콘텐츠가 성공적으로 업로드되었습니다!\n\n검토 후 커뮤니티에 게시됩니다.');
+            hideUploadModal();
+        }
+
+        function viewContent(id) {
+            alert(`콘텐츠 ${id} 상세 보기\n\n• 상세 정보 확인\n• 댓글 및 리뷰\n• 다운로드\n• 공유하기`);
+        }
+
+        // 상단 메뉴 버튼 함수들
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                alert('이전 페이지가 없습니다.');
+            }
+        }
+
+        function goHome() {
+            // 부모 창이나 메인 페이지로 이동
+            if (window.opener) {
+                window.close();
+            } else {
+                alert('메인 페이지로 이동합니다.');
+                // 실제로는 메인 페이지 URL로 이동
+                // window.location.href = '/';
+            }
+        }
+
+        // 필터 및 정렬 기능
+        document.addEventListener('DOMContentLoaded', function() {
+            // 정렬 버튼 이벤트
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // 트렌딩 태그 클릭 이벤트
+            document.querySelectorAll('.trending-tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    document.querySelector('.search-input').value = this.textContent;
+                });
+            });
+
+            // 파일 드래그 앤 드롭
+            const fileUpload = document.querySelector('.file-upload');
+            
+            fileUpload.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--color-primary-500)';
+                this.style.background = 'rgba(16, 185, 129, 0.1)';
+            });
+            
+            fileUpload.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                this.style.background = 'transparent';
+            });
+            
+            fileUpload.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                this.style.background = 'transparent';
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    alert(`${files.length}개 파일이 선택되었습니다.`);
+                }
+            });
+
+            // 모달 외부 클릭시 닫기
+            document.getElementById('uploadModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideUploadModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

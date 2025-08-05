@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One AI - 마이페이지</title>
+    <style>
+        :root {
+            /* Modern Color System */
+            --color-surface-base: #000000;
+            --color-surface-elevated: #111111;
+            --color-surface-modal: #222222;
+            --color-surface-overlay: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+            --text-quaternary: #737373;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-info: #3b82f6;
+            
+            /* Typography */
+            --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-size-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem);
+            --font-size-sm: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
+            --font-size-base: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);
+            --font-size-lg: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);
+            --font-size-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+            --font-size-2xl: clamp(1.5rem, 1.3rem + 0.8vw, 1.875rem);
+            
+            /* Spacing */
+            --space-xs: clamp(0.75rem, 0.6rem + 0.6vw, 1.125rem);
+            --space-sm: clamp(1rem, 0.8rem + 0.8vw, 1.5rem);
+            --space-md: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+            --space-lg: clamp(2rem, 1.6rem + 1.6vw, 3rem);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-primary);
+            background: var(--color-surface-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 81px;
+        }
+
+        /* 페이지 컨테이너 */
+        .page-container {
+            display: none;
+        }
+
+        .page-container.active {
+            display: block;
+        }
+
+        /* 상단 헤더 스타일 */
+        .header {
+            background: #111;
+            border-bottom: 1px solid #333;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(255,255,255,0.1);
+            flex-shrink: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #000, #333);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            border: 1px solid #555;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logo-icon:hover {
+            background: linear-gradient(135deg, #333, #555);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-right: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: #111;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            color: #fff;
+        }
+
+        .btn:hover {
+            background: #222;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #f0f0f0;
+        }
+
+        .btn-back {
+            background: transparent;
+            color: var(--color-primary-500);
+            border-color: var(--color-primary-500);
+        }
+
+        .btn-back:hover {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-md);
+        }
+
+        /* 프로필 헤더 */
+        .profile-header {
+            background: linear-gradient(135deg, var(--color-surface-elevated), var(--color-surface-modal));
+            border-radius: 16px;
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1));
+            pointer-events: none;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary-500), #34d399);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+        }
+
+        .profile-details {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .profile-status {
+            color: var(--text-secondary);
+            font-size: var(--font-size-base);
+            margin-bottom: 12px;
+        }
+
+        .profile-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+        }
+
+        .badge.pro {
+            background: linear-gradient(135deg, var(--color-primary-500), #34d399);
+            color: white;
+        }
+
+        .badge.verified {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--color-info);
+            border: 1px solid var(--color-info);
+        }
+
+        .badge.premium {
+            background: rgba(139, 92, 246, 0.1);
+            color: #8b5cf6;
+            border: 1px solid #8b5cf6;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-primary-500);
+        }
+
+        .stat-label {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        /* 통계 섹션 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+
+        .stat-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: var(--space-sm);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-primary-500), #34d399);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card-number {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--color-primary-500);
+            margin-bottom: 8px;
+        }
+
+        .stat-card-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        .stat-card-description {
+            font-size: var(--font-size-xs);
+            color: var(--text-quaternary);
+        }
+
+        /* 섹션 스타일 */
+        .section {
+            background: var(--color-surface-elevated);
+            border-radius: 12px;
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 설정 항목 */
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-sm) 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 16px;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .setting-title {
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .setting-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        /* 토글 스위치 */
+        .toggle-switch {
+            width: 48px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch.active {
+            background: var(--color-primary-500);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active::after {
+            left: 26px;
+        }
+
+        /* 버튼 스타일 */
+        .edit-btn {
+            background: var(--color-primary-500);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .edit-btn:hover {
+            background: var(--color-primary-600);
+            transform: translateY(-1px);
+        }
+
+        .edit-btn.outline {
+            background: transparent;
+            color: var(--color-primary-500);
+            border: 1px solid var(--color-primary-500);
+        }
+
+        .edit-btn.outline:hover {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        /* 활동 피드 */
+        .activity-feed {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+            margin: 0 -16px;
+            padding-left: 16px;
+            padding-right: 16px;
+            border-radius: 8px;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.ai { background: linear-gradient(135deg, #10a37f, #1a7f72); }
+        .activity-icon.share { background: linear-gradient(135deg, var(--color-primary-500), #34d399); }
+        .activity-icon.setting { background: linear-gradient(135deg, var(--color-info), #60a5fa); }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .activity-time {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        /* 구독 정보 카드 */
+        .subscription-card {
+            background: linear-gradient(135deg, var(--color-primary-500), #34d399);
+            border-radius: 12px;
+            padding: var(--space-md);
+            color: white;
+            margin-bottom: var(--space-md);
+        }
+
+        .subscription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .subscription-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+
+        .subscription-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+        }
+
+        .subscription-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .subscription-detail {
+            text-align: center;
+        }
+
+        .subscription-detail-value {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .subscription-detail-label {
+            font-size: var(--font-size-xs);
+            opacity: 0.8;
+        }
+
+        /* AI 사용량 차트 */
+        .usage-chart {
+            background: var(--color-surface-modal);
+            border-radius: 8px;
+            padding: var(--space-sm);
+            margin-bottom: var(--space-sm);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .chart-title {
+            font-size: var(--font-size-base);
+            font-weight: 500;
+        }
+
+        .chart-period {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            height: 100px;
+            gap: 4px;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--color-primary-500), #34d399);
+            border-radius: 2px 2px 0 0;
+            min-height: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .chart-bar:hover {
+            background: linear-gradient(to top, var(--color-primary-600), var(--color-primary-500));
+            transform: scaleY(1.1);
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .chart-label {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+            text-align: center;
+            flex: 1;
+        }
+
+        /* AI 엔진 상태 */
+        .ai-engines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .ai-engine-status {
+            background: var(--color-surface-modal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .ai-engine-status:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .ai-engine-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .ai-engine-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ai-engine-name {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .ai-engine-usage {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        .ai-engine-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .ai-engine-status-dot.online { background: var(--color-success); }
+        .ai-engine-status-dot.offline { background: var(--text-quaternary); }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--color-surface-elevated);
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: var(--color-surface-base);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-primary-500);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .modal-btn-cancel {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-tertiary);
+        }
+
+        .modal-btn-cancel:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            color: var(--text-primary);
+        }
+
+        .modal-btn-primary {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            background: var(--color-primary-600);
+        }
+
+        .modal-btn-danger {
+            background: var(--color-error);
+            color: white;
+        }
+
+        .modal-btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* 성공 메시지 */
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--color-success);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            color: var(--color-success);
+            text-align: center;
+        }
+
+        /* 에러 메시지 */
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--color-error);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            color: var(--color-error);
+            text-align: center;
+        }
+
+        /* 상세 페이지 스타일 */
+        .detail-page {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .detail-header {
+            background: var(--color-surface-elevated);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .detail-subtitle {
+            color: var(--text-secondary);
+            font-size: var(--font-size-base);
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+
+            .header {
+                padding: 12px 16px;
+            }
+
+            .logo {
+                font-size: 16px;
+            }
+
+            .logo-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+
+            .header-actions {
+                gap: 8px;
+            }
+
+            .btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .container {
+                padding: var(--space-sm);
+            }
+            
+            .profile-info {
+                flex-direction: column;
+                text-align: center;
+                gap: var(--space-sm);
+            }
+            
+            .profile-stats {
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .ai-engines-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 20px;
+                max-width: none;
+                width: calc(100% - 40px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 상단 헤더 -->
+    <div class="header">
+        <div class="logo" onclick="showPage('home')">
+            <div class="logo-icon">1</div>
+            <span>One AI</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn" id="loginBtn" onclick="showModal('loginModal')">로그인</button>
+            <button class="btn btn-primary" onclick="showPage('addai')">AI 엔진 추가</button>
+        </div>
+    </div>
+
+    <!-- 홈 페이지 (마이페이지) -->
+    <div id="homePage" class="page-container active">
+        <div class="container">
+            <!-- 프로필 헤더 -->
+            <header class="profile-header">
+                <div class="profile-info">
+                    <div class="profile-avatar" onclick="changeAvatar()">김</div>
+                    <div class="profile-details">
+                        <h1 class="profile-name">김사용자</h1>
+                        <p class="profile-status">One AI Pro 사용자 · 가입일: 2024년 3월</p>
+                        <div class="profile-badges">
+                            <span class="badge pro">Pro 멤버</span>
+                            <span class="badge verified">인증됨</span>
+                            <span class="badge premium">프리미엄</span>
+                        </div>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">89</div>
+                                <div class="stat-label">연속 사용일</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">1,247</div>
+                                <div class="stat-label">총 대화 수</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">156</div>
+                                <div class="stat-label">저장된 항목</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">4.9</div>
+                                <div class="stat-label">만족도</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 구독 정보 -->
+            <div class="subscription-card">
+                <div class="subscription-header">
+                    <h2 class="subscription-title">One AI Pro</h2>
+                    <div class="subscription-badge">활성</div>
+                </div>
+                <div class="subscription-details">
+                    <div class="subscription-detail">
+                        <div class="subscription-detail-value">₩29,000</div>
+                        <div class="subscription-detail-label">월 구독료</div>
+                    </div>
+                    <div class="subscription-detail">
+                        <div class="subscription-detail-value">2024.08.15</div>
+                        <div class="subscription-detail-label">다음 결제일</div>
+                    </div>
+                    <div class="subscription-detail">
+                        <div class="subscription-detail-value">무제한</div>
+                        <div class="subscription-detail-label">AI 사용량</div>
+                    </div>
+                    <div class="subscription-detail">
+                        <div class="subscription-detail-value">5개</div>
+                        <div class="subscription-detail-label">동시 세션</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 통계 그리드 -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-number">342</div>
+                    <div class="stat-card-label">이번 달 AI 대화</div>
+                    <div class="stat-card-description">지난 달 대비 +23%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-number">89h</div>
+                    <div class="stat-card-label">총 사용 시간</div>
+                    <div class="stat-card-description">평균 2.8h/일</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-number">₩156K</div>
+                    <div class="stat-card-label">누적 절약 금액</div>
+                    <div class="stat-card-description">쉐어링 통해 절약</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-number">12</div>
+                    <div class="stat-card-label">즐겨찾는 프롬프트</div>
+                    <div class="stat-card-description">자주 사용하는 템플릿</div>
+                </div>
+            </section>
+
+            <!-- AI 사용량 분석 -->
+            <section class="section">
+                <h2 class="section-title">📊 AI 사용량 분석</h2>
+                <div class="usage-chart">
+                    <div class="chart-header">
+                        <div class="chart-title">주간 사용량</div>
+                        <div class="chart-period">최근 7일</div>
+                    </div>
+                    <div class="chart-bars">
+                        <div class="chart-bar" style="height: 60%" title="월요일: 42회"></div>
+                        <div class="chart-bar" style="height: 80%" title="화요일: 56회"></div>
+                        <div class="chart-bar" style="height: 45%" title="수요일: 32회"></div>
+                        <div class="chart-bar" style="height: 90%" title="목요일: 63회"></div>
+                        <div class="chart-bar" style="height: 70%" title="금요일: 49회"></div>
+                        <div class="chart-bar" style="height: 30%" title="토요일: 21회"></div>
+                        <div class="chart-bar" style="height: 40%" title="일요일: 28회"></div>
+                    </div>
+                    <div class="chart-labels">
+                        <div class="chart-label">월</div>
+                        <div class="chart-label">화</div>
+                        <div class="chart-label">수</div>
+                        <div class="chart-label">목</div>
+                        <div class="chart-label">금</div>
+                        <div class="chart-label">토</div>
+                        <div class="chart-label">일</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI 엔진 상태 -->
+            <section class="section">
+                <h2 class="section-title">🤖 AI 엔진 상태</h2>
+                <div class="ai-engines-grid">
+                    <div class="ai-engine-status">
+                        <div class="ai-engine-icon" style="background: linear-gradient(135deg, #10a37f, #1a7f72);">G</div>
+                        <div class="ai-engine-info">
+                            <div class="ai-engine-name">ChatGPT</div>
+                            <div class="ai-engine-usage">오늘 23회 사용</div>
+                        </div>
+                        <div class="ai-engine-status-dot online"></div>
+                    </div>
+
+                    <div class="ai-engine-status">
+                        <div class="ai-engine-icon" style="background: linear-gradient(135deg, #4285f4, #ea4335);">✦</div>
+                        <div class="ai-engine-info">
+                            <div class="ai-engine-name">Gemini</div>
+                            <div class="ai-engine-usage">오늘 15회 사용</div>
+                        </div>
+                        <div class="ai-engine-status-dot online"></div>
+                    </div>
+
+                    <div class="ai-engine-status">
+                        <div class="ai-engine-icon" style="background: linear-gradient(135deg, #ff6b35, #f7931e);">C</div>
+                        <div class="ai-engine-info">
+                            <div class="ai-engine-name">Claude</div>
+                            <div class="ai-engine-usage">오늘 8회 사용</div>
+                        </div>
+                        <div class="ai-engine-status-dot online"></div>
+                    </div>
+
+                    <div class="ai-engine-status">
+                        <div class="ai-engine-icon" style="background: linear-gradient(135deg, #000, #333);">M</div>
+                        <div class="ai-engine-info">
+                            <div class="ai-engine-name">Midjourney</div>
+                            <div class="ai-engine-usage">오늘 5회 사용</div>
+                        </div>
+                        <div class="ai-engine-status-dot online"></div>
+                    </div>
+
+                    <div class="ai-engine-status">
+                        <div class="ai-engine-icon" style="background: linear-gradient(135deg, #20c997, #17a2b8);">⟐</div>
+                        <div class="ai-engine-info">
+                            <div class="ai-engine-name">Perplexity</div>
+                            <div class="ai-engine-usage">오늘 12회 사용</div>
+                        </div>
+                        <div class="ai-engine-status-dot online"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 계정 설정 -->
+            <section class="section">
+                <h2 class="section-title">👤 계정 정보</h2>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-title">이메일 주소</div>
+                        <div class="setting-description">user@example.com</div>
+                    </div>
+                    <button class="edit-btn outline" onclick="showModal('emailModal')">변경</button>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-title">비밀번호</div>
+                        <div class="setting-description">마지막 변경: 2024년 1월</div>
+                    </div>
+                    <button class="edit-btn outline" onclick="showModal('passwordModal')">변경</button>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-title">언어 설정</div>
+                        <div class="setting-description">한국어</div>
+                    </div>
+                    <button class="edit-btn outline" onclick="showModal('languageModal')">변경</button>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-title">구독 관리</div>
+                        <div class="setting-description">One AI Pro - 다음 결제일: 2024년 8월 15일</div>
+                    </div>
+                    <button class="edit-btn" onclick="showPage('subscription')">관리</button>
+                </div>
+            </section>
+
+            <!-- 환경 설정 -->
+            <section class="section">
+                <h2 class="section-title">⚙️ 환경 설정</h2>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-title">다크 모드</div>
+                        <div class="setting-description">어두운 테마로 눈의 피로를 줄여보세요</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-title">알림 설정</div>
+                        <div class="setting-description">새로운 기능과 업데이트 알림 받기</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-title">자동 저장</div>
+                        <div class="setting-description">대화 내용을 자동으로 저장합니다</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-title">고급 모드</div>
+                        <div class="setting-description">더 상세한 응답과 기술적 설명</div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-title">실시간 번역</div>
+                        <div class="setting-description">AI 대화를 실시간으로 번역합니다</div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleSwitch(this)"></div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <div class="setting-title">음성 입력</div>
+                        <div class="setting-description">마이크를 통한 음성 명령 활성화</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+                </div>
+            </section>
+
+            <!-- 최근 활동 -->
+            <section class="section">
+                <h2 class="section-title">🕒 최근 활동</h2>
+                <ul class="activity-feed">
+                    <li class="activity-item">
+                        <div class="activity-icon ai">G</div>
+                        <div class="activity-content">
+                            <div class="activity-title">ChatGPT로 코딩 문제 해결</div>
+                            <div class="activity-time">2분 전</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon ai" style="background: linear-gradient(135deg, #000, #333);">M</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Midjourney로 로고 디자인 생성</div>
+                            <div class="activity-time">15분 전</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon share">🤝</div>
+                        <div class="activity-content">
+                            <div class="activity-title">ChatGPT Plus 쉐어링 참여</div>
+                            <div class="activity-time">1시간 전</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon ai" style="background: linear-gradient(135deg, #ff6b35, #f7931e);">C</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Claude로 문서 요약 작업</div>
+                            <div class="activity-time">2시간 전</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon setting">⚙️</div>
+                        <div class="activity-content">
+                            <div class="activity-title">프로필 설정 업데이트</div>
+                            <div class="activity-time">어제</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon ai" style="background: linear-gradient(135deg, #20c997, #17a2b8);">⟐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Perplexity로 최신 뉴스 검색</div>
+                            <div class="activity-time">2일 전</div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    </div>
+
+    <!-- AI 엔진 추가 페이지 -->
+    <div id="addaiPage" class="page-container">
+        <div class="container">
+            <div class="detail-page">
+                <div class="detail-header">
+                    <h1 class="detail-title">AI 엔진 추가</h1>
+                    <p class="detail-subtitle">다양한 AI 엔진을 추가하여 원하는 기능을 사용해보세요</p>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">💬 대화형 AI</h2>
+                    <div class="ai-engines-grid">
+                        <div class="ai-engine-status" style="cursor: pointer;" onclick="addAIEngine('ChatGPT')">
+                            <div class="ai-engine-icon" style="background: linear-gradient(135deg, #10a37f, #1a7f72);">G</div>
+                            <div class="ai-engine-info">
+                                <div class="ai-engine-name">ChatGPT</div>
+                                <div class="ai-engine-usage">OpenAI의 대화형 AI</div>
+                            </div>
+                            <button class="edit-btn" onclick="event.stopPropagation(); addAIEngine('ChatGPT')">추가</button>
+                        </div>
+
+                        <div class="ai-engine-status" style="cursor: pointer;" onclick="addAIEngine('Claude')">
+                            <div class="ai-engine-icon" style="background: linear-gradient(135deg, #ff6b35, #f7931e);">C</div>
+                            <div class="ai-engine-info">
+                                <div class="ai-engine-name">Claude</div>
+                                <div class="ai-engine-usage">Anthropic의 고급 AI</div>
+                            </div>
+                            <button class="edit-btn" onclick="event.stopPropagation(); addAIEngine('Claude')">추가</button>
+                        </div>
+
+                        <div class="ai-engine-status" style="cursor: pointer;" onclick="addAIEngine('Gemini')">
+                            <div class="ai-engine-icon" style="background: linear-gradient(135deg, #4285f4, #ea4335);">✦</div>
+                            <div class="ai-engine-info">
+                                <div class="ai-engine-name">Gemini</div>
+                                <div class="ai-engine-usage">Google의 고급 AI 모델</div>
+                            </div>
+                            <button class="edit-btn" onclick="event.stopPropagation(); addAIEngine('Gemini')">추가</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">🎨 이미지 생성 AI</h2>
+                    <div class="ai-engines-grid">
+                        <div class="ai-engine-status" style="cursor: pointer;" onclick="addAIEngine('Midjourney')">
+                            <div class="ai-engine-icon" style="background: linear-gradient(135deg, #000, #333);">M</div>
+                            <div class="ai-engine-info">
+                                <div class="ai-engine-name">Midjourney</div>
+                                <div class="ai-engine-usage">AI 이미지 생성</div>
+                            </div>
+                            <button class="edit-btn" onclick="event.stopPropagation(); addAIEngine('Midjourney')">추가</button>
+                        </div>
+
+                        <div class="ai-engine-status" style="cursor: pointer;" onclick="addAIEngine('DALL-E')">
+                            <div class="ai-engine-icon" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52);">🎨</div>
+                            <div class="ai-engine-info">
+                                <div class="ai-engine-name">DALL-E</div>
+                                <div class="ai-engine-usage">OpenAI 이미지 생성</div>
+                            </div>
+                            <button class="edit-btn" onclick="event.stopPropagation(); addAIEngine('DALL-E')">추가</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">🔍 검색 & 분석</h2>
+                    <div class="ai-engines-grid">
+                        <div class="ai-engine-status" style="cursor: pointer;" onclick="addAIEngine('Perplexity')">
+                            <div class="ai-engine-icon" style="background: linear-gradient(135deg, #20c997, #17a2b8);">⟐</div>
+                            <div class="ai-engine-info">
+                                <div class="ai-engine-name">Perplexity</div>
+                                <div class="ai-engine-usage">AI 검색 엔진</div>
+                            </div>
+                            <button class="edit-btn" onclick="event.stopPropagation(); addAIEngine('Perplexity')">추가</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 구독 관리 페이지 -->
+    <div id="subscriptionPage" class="page-container">
+        <div class="container">
+            <div class="detail-page">
+                <div class="detail-header">
+                    <h1 class="detail-title">구독 관리</h1>
+                    <p class="detail-subtitle">One AI Pro 구독 정보를 관리하세요</p>
+                </div>
+
+                <!-- 현재 구독 정보 -->
+                <div class="subscription-card">
+                    <div class="subscription-header">
+                        <h2 class="subscription-title">One AI Pro</h2>
+                        <div class="subscription-badge">활성</div>
+                    </div>
+                    <div class="subscription-details">
+                        <div class="subscription-detail">
+                            <div class="subscription-detail-value">₩29,000</div>
+                            <div class="subscription-detail-label">월 구독료</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail-value">2024.08.15</div>
+                            <div class="subscription-detail-label">다음 결제일</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail-value">무제한</div>
+                            <div class="subscription-detail-label">AI 사용량</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail-value">5개</div>
+                            <div class="subscription-detail-label">동시 세션</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 구독 관리 옵션 -->
+                <div class="section">
+                    <h2 class="section-title">💳 결제 관리</h2>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">결제 방법</div>
+                            <div class="setting-description">신용카드 **** 1234</div>
+                        </div>
+                        <button class="edit-btn outline" onclick="showModal('paymentModal')">변경</button>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">결제 주기</div>
+                            <div class="setting-description">월간 자동 결제</div>
+                        </div>
+                        <button class="edit-btn outline" onclick="showModal('billingCycleModal')">변경</button>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">영수증 이메일</div>
+                            <div class="setting-description">user@example.com</div>
+                        </div>
+                        <button class="edit-btn outline" onclick="showModal('receiptEmailModal')">변경</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">📊 사용량 현황</h2>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">이번 달 AI 대화</div>
+                            <div class="setting-description">342회 / 무제한</div>
+                        </div>
+                        <div class="edit-btn outline" style="cursor: default;">무제한</div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">동시 세션</div>
+                            <div class="setting-description">2개 활성 / 5개 허용</div>
+                        </div>
+                        <div class="edit-btn outline" style="cursor: default;">2/5</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">⚠️ 구독 취소</h2>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">구독 해지</div>
+                            <div class="setting-description">언제든지 구독을 취소할 수 있습니다</div>
+                        </div>
+                        <button class="edit-btn" style="background: var(--color-error);" onclick="showModal('cancelSubscriptionModal')">해지</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 로그인 모달 -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">One AI 로그인</h2>
+                <button class="modal-close" onclick="hideModal('loginModal')">&times;</button>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">이메일</label>
+                    <input type="email" class="form-input" placeholder="이메일 주소를 입력하세요" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">비밀번호</label>
+                    <input type="password" class="form-input" placeholder="비밀번호를 입력하세요" required>
+                </div>
+            </form>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="hideModal('loginModal')">취소</button>
+                <button class="modal-btn modal-btn-primary" onclick="performLogin()">로그인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 이메일 변경 모달 -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">이메일 주소 변경</h2>
+                <button class="modal-close" onclick="hideModal('emailModal')">&times;</button>
+            </div>
+            <form id="emailForm">
+                <div class="form-group">
+                    <label class="form-label">현재 이메일</label>
+                    <input type="email" class="form-input" value="user@example.com" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">새 이메일</label>
+                    <input type="email" class="form-input" placeholder="새 이메일 주소를 입력하세요" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">비밀번호 확인</label>
+                    <input type="password" class="form-input" placeholder="현재 비밀번호를 입력하세요" required>
+                </div>
+            </form>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="hideModal('emailModal')">취소</button>
+                <button class="modal-btn modal-btn-primary" onclick="changeEmail()">변경</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 비밀번호 변경 모달 -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">비밀번호 변경</h2>
+                <button class="modal-close" onclick="hideModal('passwordModal')">&times;</button>
+            </div>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label class="form-label">현재 비밀번호</label>
+                    <input type="password" class="form-input" placeholder="현재 비밀번호를 입력하세요" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">새 비밀번호</label>
+                    <input type="password" class="form-input" placeholder="새 비밀번호를 입력하세요" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">새 비밀번호 확인</label>
+                    <input type="password" class="form-input" placeholder="새 비밀번호를 다시 입력하세요" required>
+                </div>
+            </form>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="hideModal('passwordModal')">취소</button>
+                <button class="modal-btn modal-btn-primary" onclick="changePassword()">변경</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 언어 설정 모달 -->
+    <div id="languageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">언어 설정</h2>
+                <button class="modal-close" onclick="hideModal('languageModal')">&times;</button>
+            </div>
+            <form id="languageForm">
+                <div class="form-group">
+                    <label class="form-label">언어 선택</label>
+                    <select class="form-select" required>
+                        <option value="ko" selected>한국어</option>
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                        <option value="zh">中文</option>
+                        <option value="es">Español</option>
+                    </select>
+                </div>
+            </form>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="hideModal('languageModal')">취소</button>
+                <button class="modal-btn modal-btn-primary" onclick="changeLanguage()">적용</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 결제 방법 변경 모달 -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">결제 방법 변경</h2>
+                <button class="modal-close" onclick="hideModal('paymentModal')">&times;</button>
+            </div>
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label class="form-label">결제 방법</label>
+                    <select class="form-select" required>
+                        <option value="card" selected>신용/체크카드</option>
+                        <option value="bank">계좌이체</option>
+                        <option value="kakao">카카오페이</option>
+                        <option value="toss">토스페이</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">카드 번호</label>
+                    <input type="text" class="form-input" placeholder="1234-5678-9012-3456" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">유효기간</label>
+                    <input type="text" class="form-input" placeholder="MM/YY" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">CVC</label>
+                    <input type="text" class="form-input" placeholder="123" required>
+                </div>
+            </form>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="hideModal('paymentModal')">취소</button>
+                <button class="modal-btn modal-btn-primary" onclick="changePaymentMethod()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 결제 주기 변경 모달 -->
+    <div id="billingCycleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">결제 주기 변경</h2>
+                <button class="modal-close" onclick="hideModal('billingCycleModal')">&times;</button>
+            </div>
+            <form id="billingCycleForm">
+                <div class="form-group">
+                    <label class="form-label">결제 주기</label>
+                    <select class="form-select" required>
+                        <option value="monthly" selected>월간 (₩29,000)</option>
+                        <option value="yearly">연간 (₩290,000 - 17% 할인)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <p style="color: var(--text-secondary); font-size: 14px;">
+                        연간 결제 시 2개월치가 무료! 총 ₩58,000 절약
+                    </p>
+                </div>
+            </form>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="hideModal('billingCycleModal')">취소</button>
+                <button class="modal-btn modal-btn-primary" onclick="changeBillingCycle()">변경</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 영수증 이메일 변경 모달 -->
+    <div id="receiptEmailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">영수증 이메일 변경</h2>
+                <button class="modal-close" onclick="hideModal('receiptEmailModal')">&times;</button>
+            </div>
+            <form id="receiptEmailForm">
+                <div class="form-group">
+                    <label class="form-label">영수증 받을 이메일</label>
+                    <input type="email" class="form-input" value="user@example.com" required>
+                </div>
+                <div class="form-group">
+                    <p style="color: var(--text-secondary); font-size: 14px;">
+                        매월 결제 완료 시 영수증이 발송됩니다.
+                    </p>
+                </div>
+            </form>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="hideModal('receiptEmailModal')">취소</button>
+                <button class="modal-btn modal-btn-primary" onclick="changeReceiptEmail()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 구독 취소 모달 -->
+    <div id="cancelSubscriptionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">구독 해지</h2>
+                <button class="modal-close" onclick="hideModal('cancelSubscriptionModal')">&times;</button>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <p style="color: var(--color-error); font-weight: 600; margin-bottom: 16px;">
+                    ⚠️ 구독을 해지하시겠습니까?
+                </p>
+                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+                    구독 해지 시 다음 혜택들을 잃게 됩니다:<br>
+                    • 무제한 AI 대화<br>
+                    • 동시 5개 세션<br>
+                    • 프리미엄 AI 모델 접근<br>
+                    • 우선 고객 지원
+                </p>
+            </div>
+            <form id="cancelForm">
+                <div class="form-group">
+                    <label class="form-label">해지 사유 (선택)</label>
+                    <select class="form-select">
+                        <option value="">선택해주세요</option>
+                        <option value="cost">비용 부담</option>
+                        <option value="usage">사용량 부족</option>
+                        <option value="features">원하는 기능 없음</option>
+                        <option value="competitor">다른 서비스 이용</option>
+                        <option value="other">기타</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">추가 의견 (선택)</label>
+                    <textarea class="form-textarea" placeholder="개선사항이나 의견을 남겨주시면 서비스 발전에 도움이 됩니다."></textarea>
+                </div>
+            </form>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="hideModal('cancelSubscriptionModal')">취소</button>
+                <button class="modal-btn modal-btn-danger" onclick="cancelSubscription()">해지하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI 엔진 추가 성공 모달 -->
+    <div id="aiEngineSuccessModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">AI 엔진 추가 완료</h2>
+                <button class="modal-close" onclick="hideModal('aiEngineSuccessModal')">&times;</button>
+            </div>
+            <div class="success-message">
+                <h3 style="margin-bottom: 8px;">✅ 성공적으로 추가되었습니다!</h3>
+                <p id="addedEngineMessage">ChatGPT가 사이드바에 추가되었습니다.</p>
+            </div>
+            <div style="text-align: center; color: var(--text-secondary); font-size: 14px;">
+                이제 사이드바에서 바로 접근할 수 있습니다.
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" onclick="hideModal('aiEngineSuccessModal')">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 일반 성공 알림 모달 -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">완료</h2>
+                <button class="modal-close" onclick="hideModal('successModal')">&times;</button>
+            </div>
+            <div class="success-message">
+                <h3 style="margin-bottom: 8px;">✅ 성공</h3>
+                <p id="successMessage">작업이 완료되었습니다.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" onclick="hideModal('successModal')">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 에러 알림 모달 -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">오류</h2>
+                <button class="modal-close" onclick="hideModal('errorModal')">&times;</button>
+            </div>
+            <div class="error-message">
+                <h3 style="margin-bottom: 8px;">❌ 오류 발생</h3>
+                <p id="errorMessage">작업을 완료할 수 없습니다.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" onclick="hideModal('errorModal')">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 상태 관리
+        let isLoggedIn = false;
+        let currentUser = {
+            name: '김사용자',
+            email: 'user@example.com',
+            avatar: '김'
+        };
+
+        // 페이지 관리
+        function showPage(pageName) {
+            // 모든 페이지 숨기기
+            document.querySelectorAll('.page-container').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // 헤더 버튼 업데이트
+            const headerActions = document.querySelector('.header-actions');
+            
+            if (pageName === 'home') {
+                // 홈 페이지
+                document.getElementById('homePage').classList.add('active');
+                headerActions.innerHTML = `
+                    <button class="btn" id="loginBtn" onclick="showModal('loginModal')">로그인</button>
+                    <button class="btn btn-primary" onclick="showPage('addai')">AI 엔진 추가</button>
+                `;
+            } else if (pageName === 'addai') {
+                // AI 엔진 추가 페이지
+                document.getElementById('addaiPage').classList.add('active');
+                headerActions.innerHTML = `
+                    <button class="btn btn-back" onclick="showPage('home')">뒤로 가기</button>
+                `;
+            } else if (pageName === 'subscription') {
+                // 구독 관리 페이지
+                document.getElementById('subscriptionPage').classList.add('active');
+                headerActions.innerHTML = `
+                    <button class="btn btn-back" onclick="showPage('home')">뒤로 가기</button>
+                `;
+            }
+        }
+
+        // 모달 관리
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successMessage').textContent = message;
+            showModal('successModal');
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            showModal('errorModal');
+        }
+
+        // 로그인 기능
+        function performLogin() {
+            const email = document.querySelector('#loginForm input[type="email"]').value;
+            const password = document.querySelector('#loginForm input[type="password"]').value;
+            
+            if (!email || !password) {
+                showError('이메일과 비밀번호를 모두 입력해주세요.');
+                return;
+            }
+            
+            // 간단한 유효성 검사
+            if (!email.includes('@')) {
+                showError('올바른 이메일 주소를 입력해주세요.');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showError('비밀번호는 6자 이상이어야 합니다.');
+                return;
+            }
+            
+            // 로그인 성공 시뮬레이션
+            isLoggedIn = true;
+            currentUser.email = email;
+            
+            hideModal('loginModal');
+            showSuccess('로그인에 성공했습니다!');
+            
+            // 로그인 버튼을 로그아웃으로 변경
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) {
+                loginBtn.textContent = '로그아웃';
+                loginBtn.onclick = logout;
+            }
+            
+            // 폼 초기화
+            document.getElementById('loginForm').reset();
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) {
+                loginBtn.textContent = '로그인';
+                loginBtn.onclick = () => showModal('loginModal');
+            }
+            showSuccess('로그아웃되었습니다.');
+        }
+
+        // 계정 설정 변경 기능들
+        function changeEmail() {
+            const newEmail = document.querySelector('#emailForm input[type="email"]:not([readonly])').value;
+            const password = document.querySelector('#emailForm input[type="password"]').value;
+            
+            if (!newEmail || !password) {
+                showError('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            if (!newEmail.includes('@')) {
+                showError('올바른 이메일 주소를 입력해주세요.');
+                return;
+            }
+            
+            // 이메일 변경 시뮬레이션
+            currentUser.email = newEmail;
+            
+            // UI 업데이트
+            document.querySelector('[data-setting="email"] .setting-description').textContent = newEmail;
+            
+            hideModal('emailModal');
+            showSuccess('이메일 주소가 성공적으로 변경되었습니다.');
+            document.getElementById('emailForm').reset();
+        }
+
+        function changePassword() {
+            const currentPassword = document.querySelector('#passwordForm input:nth-child(1)').value;
+            const newPassword = document.querySelector('#passwordForm input:nth-child(2)').value;
+            const confirmPassword = document.querySelector('#passwordForm input:nth-child(3)').value;
+            
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showError('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                showError('새 비밀번호는 8자 이상이어야 합니다.');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showError('새 비밀번호가 일치하지 않습니다.');
+                return;
+            }
+            
+            hideModal('passwordModal');
+            showSuccess('비밀번호가 성공적으로 변경되었습니다.');
+            document.getElementById('passwordForm').reset();
+        }
+
+        function changeLanguage() {
+            const selectedLanguage = document.querySelector('#languageForm select').value;
+            const languageNames = {
+                'ko': '한국어',
+                'en': 'English', 
+                'ja': '日本語',
+                'zh': '中文',
+                'es': 'Español'
+            };
+            
+            // UI 업데이트
+            const languageDesc = document.querySelector('[data-setting="language"] .setting-description');
+            if (languageDesc) {
+                languageDesc.textContent = languageNames[selectedLanguage];
+            }
+            
+            hideModal('languageModal');
+            showSuccess(`언어가 ${languageNames[selectedLanguage]}로 변경되었습니다.`);
+        }
+
+        // 구독 관리 기능들
+        function changePaymentMethod() {
+            const paymentMethod = document.querySelector('#paymentForm select').value;
+            const cardNumber = document.querySelector('#paymentForm input[placeholder*="카드"]').value;
+            
+            if (!cardNumber) {
+                showError('카드 번호를 입력해주세요.');
+                return;
+            }
+            
+            hideModal('paymentModal');
+            showSuccess('결제 방법이 성공적으로 변경되었습니다.');
+            document.getElementById('paymentForm').reset();
+        }
+
+        function changeBillingCycle() {
+            const cycle = document.querySelector('#billingCycleForm select').value;
+            const cycleText = cycle === 'monthly' ? '월간 자동 결제' : '연간 자동 결제';
+            
+            hideModal('billingCycleModal');
+            showSuccess(`결제 주기가 ${cycleText}로 변경되었습니다.`);
+        }
+
+        function changeReceiptEmail() {
+            const email = document.querySelector('#receiptEmailForm input').value;
+            
+            if (!email || !email.includes('@')) {
+                showError('올바른 이메일 주소를 입력해주세요.');
+                return;
+            }
+            
+            hideModal('receiptEmailModal');
+            showSuccess('영수증 이메일이 성공적으로 변경되었습니다.');
+        }
+
+        function cancelSubscription() {
+            const reason = document.querySelector('#cancelForm select').value;
+            
+            hideModal('cancelSubscriptionModal');
+            
+            // 구독 취소 시뮬레이션
+            setTimeout(() => {
+                showSuccess('구독이 해지되었습니다. 현재 결제 기간이 끝날 때까지 서비스를 이용할 수 있습니다.');
+            }, 500);
+            
+            document.getElementById('cancelForm').reset();
+        }
+
+        // AI 엔진 추가 기능
+        function addAIEngine(engineName) {
+            // AI 엔진 추가 시뮬레이션
+            document.getElementById('addedEngineMessage').textContent = `${engineName}이(가) 사이드바에 추가되었습니다.`;
+            showModal('aiEngineSuccessModal');
+        }
+
+        // 기타 기능들
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+            
+            const settingTitle = element.closest('.setting-item').querySelector('.setting-title').textContent;
+            const isActive = element.classList.contains('active');
+            
+            console.log(`${settingTitle}: ${isActive ? '활성화' : '비활성화'}`);
+        }
+
+        function changeAvatar() {
+            const avatars = ['김', '🤖', '👨‍💻', '🧠', '✨', '🚀', '💡', '🎯'];
+            const currentAvatar = document.querySelector('.profile-avatar');
+            const randomAvatar = avatars[Math.floor(Math.random() * avatars.length)];
+            
+            currentAvatar.textContent = randomAvatar;
+            currentAvatar.style.animation = 'bounce 0.6s ease';
+            
+            setTimeout(() => {
+                currentAvatar.style.animation = '';
+            }, 600);
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        // 애니메이션 효과
+        document.addEventListener('DOMContentLoaded', function() {
+            // 카드 애니메이션
+            const cards = document.querySelectorAll('.stat-card, .section, .subscription-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    }
+                });
+            });
+            
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.6s ease';
+                observer.observe(card);
+            });
+
+            // 통계 숫자 애니메이션
+            const statNumbers = document.querySelectorAll('.stat-card-number, .stat-number');
+            statNumbers.forEach(stat => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            animateNumber(entry.target);
+                        }
+                    });
+                });
+                observer.observe(stat);
+            });
+
+            // 차트 바 애니메이션
+            const chartBars = document.querySelectorAll('.chart-bar');
+            chartBars.forEach((bar, index) => {
+                setTimeout(() => {
+                    bar.style.transform = 'scaleY(1)';
+                }, index * 100);
+                bar.style.transform = 'scaleY(0)';
+                bar.style.transformOrigin = 'bottom';
+                bar.style.transition = 'transform 0.6s ease';
+            });
+
+            // 설정 항목들에 data 속성 추가 (동적 업데이트를 위해)
+            const settingItems = document.querySelectorAll('.setting-item');
+            settingItems.forEach(item => {
+                const title = item.querySelector('.setting-title').textContent;
+                if (title.includes('이메일')) {
+                    item.setAttribute('data-setting', 'email');
+                } else if (title.includes('언어')) {
+                    item.setAttribute('data-setting', 'language');
+                }
+            });
+        });
+
+        function animateNumber(element) {
+            const finalValue = element.textContent;
+            const isKorean = finalValue.includes('₩') || finalValue.includes('K');
+            const hasUnit = finalValue.includes('h') || finalValue.includes('일');
+            
+            let numericValue = parseFloat(finalValue.replace(/[^\d.]/g, ''));
+            
+            if (finalValue.includes('K')) {
+                numericValue = numericValue * 1000;
+            }
+            
+            let currentValue = 0;
+            const increment = numericValue / 30;
+            const duration = 1500;
+            const stepTime = duration / 30;
+            
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= numericValue) {
+                    currentValue = numericValue;
+                    clearInterval(timer);
+                }
+                
+                let displayValue = Math.floor(currentValue);
+                
+                if (finalValue.includes('₩') && finalValue.includes('K')) {
+                    element.textContent = `₩${Math.floor(displayValue / 1000)}K`;
+                } else if (finalValue.includes('₩')) {
+                    element.textContent = `₩${displayValue.toLocaleString()}`;
+                } else if (finalValue.includes('h')) {
+                    element.textContent = `${displayValue}h`;
+                } else if (finalValue.includes('일')) {
+                    element.textContent = `${displayValue}일`;
+                } else if (finalValue.includes('.')) {
+                    element.textContent = (displayValue / 1000).toFixed(1);
+                } else {
+                    element.textContent = displayValue.toLocaleString();
+                }
+            }, stepTime);
+        }
+
+        // CSS 애니메이션 추가
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes bounce {
+                0%, 20%, 53%, 80%, 100% {
+                    transform: translate3d(0,0,0) scale(1);
+                }
+                40%, 43% {
+                    transform: translate3d(0, -10px, 0) scale(1.1);
+                }
+                70% {
+                    transform: translate3d(0, -5px, 0) scale(1.05);
+                }
+                90% {
+                    transform: translate3d(0, -2px, 0) scale(1.02);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
+                

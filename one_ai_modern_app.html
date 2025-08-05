@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One AI - 모든 AI를 하나로</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Modern Design System v2.0 - 완전 적용 */
+        :root {
+            /* Color Scheme */
+            color-scheme: dark;
+            
+            /* Surface Colors */
+            --color-surface-base: #000000;
+            --color-surface-raised: #0a0a0a;
+            --color-surface-elevated: #111111;
+            --color-surface-overlay: #1a1a1a;
+            --color-surface-modal: #222222;
+            
+            /* Glass Morphism */
+            --surface-glass: rgba(17, 17, 17, 0.8);
+            --surface-glass-border: rgba(255, 255, 255, 0.1);
+            
+            /* Text Colors */
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+            --text-quaternary: #737373;
+            --text-disabled: #525252;
+            
+            /* Brand Colors */
+            --color-primary-400: #34d399;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            
+            /* Semantic Colors */
+            --color-success: #10b981;
+            --color-error: #ef4444;
+            --color-warning: #f59e0b;
+            --color-info: #3b82f6;
+            
+            /* AI Service Gradients */
+            --ai-gpt-gradient: linear-gradient(135deg, #10a37f, #1a7f72);
+            --ai-gemini-gradient: linear-gradient(135deg, #4285f4, #ea4335);
+            --ai-perplexity-gradient: linear-gradient(135deg, #20c997, #17a2b8);
+            --ai-midjourney-gradient: linear-gradient(135deg, #000, #333);
+            --ai-claude-gradient: linear-gradient(135deg, #ff6b35, #f7931e);
+            
+            /* Typography */
+            --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            
+            /* Fluid Typography */
+            --font-size-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem);
+            --font-size-sm: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
+            --font-size-base: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);
+            --font-size-lg: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);
+            --font-size-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+            
+            /* Font Weights */
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            
+            /* Fluid Spacing */
+            --space-xs: clamp(0.75rem, 0.6rem + 0.6vw, 1.125rem);
+            --space-sm: clamp(1rem, 0.8rem + 0.8vw, 1.5rem);
+            --space-md: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+            --space-lg: clamp(2rem, 1.6rem + 1.6vw, 3rem);
+            
+            /* Z-Index */
+            --z-sidebar: 100;
+            --z-header: 200;
+            --z-modal: 400;
+            --z-toast: 500;
+            --z-tooltip: 600;
+        }
+
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Remove default button styles */
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* Remove default focus outline */
+        *:focus {
+            outline: none;
+        }
+
+        /* Custom focus styles */
+        *:focus-visible {
+            outline: 2px solid var(--color-primary-500);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        body {
+            font-family: var(--font-family-primary);
+            background: var(--color-surface-base);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* Sidebar - 더 좁게 */
+        .sidebar {
+            width: 56px;
+            background: var(--color-surface-elevated);
+            border-right: 1px solid var(--surface-glass-border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: var(--z-sidebar);
+            flex-shrink: 0;
+        }
+
+        /* Logo Section */
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--surface-glass-border);
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--color-primary-500);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: var(--font-weight-bold);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border: none;
+        }
+
+        .logo-icon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .logo-icon:focus-visible {
+            outline: 2px solid var(--color-primary-400);
+            outline-offset: 2px;
+        }
+
+        /* AI Engines Section */
+        .ai-engines-section {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--surface-glass-border);
+        }
+
+        .section-title {
+            font-size: 9px;
+            color: var(--text-quaternary);
+            margin-bottom: 8px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: var(--font-weight-medium);
+        }
+
+        .ai-engines-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .ai-engine-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* AI Engine Icons - 작은 크기로 조정 */
+        .ai-engine-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white;
+            font-size: 14px;
+            font-weight: var(--font-weight-semibold);
+            position: relative;
+            border: none;
+        }
+
+        .ai-engine-icon:hover {
+            transform: scale(1.1) translateY(-2px);
+        }
+
+        .ai-engine-icon:focus-visible {
+            outline: 2px solid var(--color-primary-400);
+            outline-offset: 2px;
+        }
+
+        /* AI Service Specific Styles */
+        .ai-engine-icon.gpt { 
+            background: var(--ai-gpt-gradient);
+        }
+        .ai-engine-icon.gpt:hover { 
+            box-shadow: 0 8px 25px rgba(16, 163, 127, 0.4);
+        }
+
+        .ai-engine-icon.gemini { 
+            background: var(--ai-gemini-gradient);
+        }
+        .ai-engine-icon.gemini:hover { 
+            box-shadow: 0 8px 25px rgba(66, 133, 244, 0.4);
+        }
+
+        .ai-engine-icon.perplexity { 
+            background: var(--ai-perplexity-gradient);
+        }
+        .ai-engine-icon.perplexity:hover { 
+            box-shadow: 0 8px 25px rgba(32, 201, 151, 0.4);
+        }
+
+        .ai-engine-icon.midjourney { 
+            background: var(--ai-midjourney-gradient);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .ai-engine-icon.midjourney:hover { 
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        .ai-engine-icon.claude { 
+            background: var(--ai-claude-gradient);
+        }
+        .ai-engine-icon.claude:hover { 
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        /* Remove Button */
+        .ai-engine-remove {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 18px;
+            height: 18px;
+            background: var(--color-error);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s ease;
+            font-weight: var(--font-weight-bold);
+            border: 2px solid var(--color-surface-elevated);
+        }
+
+        .ai-engine-item:hover .ai-engine-remove {
+            opacity: 1;
+        }
+
+        .ai-engine-remove:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .ai-engine-remove:focus-visible {
+            outline: 2px solid var(--color-error);
+            outline-offset: 2px;
+        }
+
+        /* Add AI Button */
+        .add-ai-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 7px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-quaternary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            position: relative;
+        }
+
+        .add-ai-btn:hover {
+            border-color: var(--color-primary-500);
+            color: var(--color-primary-500);
+            background: rgba(16, 185, 129, 0.1);
+            transform: scale(1.05);
+        }
+
+        .add-ai-btn:focus-visible {
+            outline: 2px solid var(--color-primary-400);
+            outline-offset: 2px;
+        }
+
+        /* Navigation Menu - 하단 정렬 */
+        .nav-menu {
+            flex: 1;
+            padding: 12px 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .nav-item {
+            width: 36px;
+            height: 36px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            position: relative;
+            border: none;
+            background: transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            transform: scale(1.05);
+        }
+
+        .nav-item:focus-visible {
+            outline: 2px solid var(--color-primary-400);
+            outline-offset: 2px;
+        }
+
+        .nav-item.active {
+            background: var(--color-primary-500);
+            color: white;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Tooltip System */
+        .tooltip {
+            position: absolute;
+            left: calc(100% + 12px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--color-surface-modal);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: var(--font-weight-medium);
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: var(--z-tooltip);
+            border: 1px solid var(--surface-glass-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -6px;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 6px 6px 6px 0;
+            border-color: transparent var(--color-surface-modal) transparent transparent;
+        }
+
+        .nav-item:hover .tooltip,
+        .ai-engine-item:hover .tooltip,
+        .logo-icon:hover .tooltip,
+        .add-ai-btn:hover .tooltip,
+        .session-indicator:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--color-surface-base);
+        }
+
+        .module-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+            background: var(--color-surface-base);
+        }
+
+        .module-frame.active {
+            display: block;
+        }
+
+        /* Toast System */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: var(--z-toast);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 24rem;
+        }
+
+        .toast {
+            background: var(--color-surface-modal);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: 8px;
+            padding: 16px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transform: translateX(100%);
+            animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--color-success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--color-error);
+        }
+
+        .toast.warning {
+            border-left: 4px solid var(--color-warning);
+        }
+
+        .toast.info {
+            border-left: 4px solid var(--color-info);
+        }
+
+        .toast.dismissing {
+            animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast-icon {
+            font-size: 16px;
+        }
+
+        .toast-message {
+            font-size: 14px;
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+        }
+
+        @keyframes slideInRight {
+            from { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+        }
+
+        @keyframes slideOutRight {
+            from { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+            to { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+        }
+
+        /* Modal System */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: var(--z-modal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: modalFadeIn 0.2s ease;
+        }
+
+        .modal-content {
+            background: var(--color-surface-modal);
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid var(--surface-glass-border);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            color: var(--color-primary-500);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: 8px;
+        }
+
+        .modal-description {
+            color: var(--text-secondary);
+            font-size: var(--font-size-base);
+        }
+
+        .modal-info {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--color-success);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .modal-info h3 {
+            color: var(--color-success);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            margin-bottom: 8px;
+        }
+
+        .modal-info p {
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-600);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:focus-visible {
+            outline: 2px solid var(--color-primary-400);
+            outline-offset: 2px;
+        }
+
+        .btn-secondary {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:focus-visible {
+            outline: 2px solid #8b5cf6;
+            outline-offset: 2px;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-tertiary);
+            border: 1px solid var(--surface-glass-border);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .btn-ghost:focus-visible {
+            outline: 2px solid var(--color-primary-400);
+            outline-offset: 2px;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalSlideIn {
+            from { 
+                opacity: 0; 
+                transform: scale(0.95) translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1) translateY(0); 
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 50px;
+            }
+            
+            .logo-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+            
+            .nav-item {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+            
+            .ai-engine-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+            }
+
+            .add-ai-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+
+            .toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --color-surface-base: #000000;
+                --color-surface-elevated: #ffffff;
+                --text-primary: #ffffff;
+                --text-secondary: #ffffff;
+                --color-primary-500: #00ff00;
+            }
+            
+            .nav-item,
+            .ai-engine-icon,
+            .logo-icon {
+                border: 2px solid currentColor;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .status-dot {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <nav class="sidebar" role="navigation" aria-label="주요 네비게이션">
+            <!-- Logo -->
+            <div class="logo-section">
+                <button class="logo-icon" 
+                        onclick="showModule('home')" 
+                        aria-label="One AI 홈으로 이동"
+                        type="button">
+                    1
+                    <div class="tooltip" role="tooltip">One AI 홈</div>
+                </button>
+            </div>
+
+            <!-- AI Engines Section -->
+            <div class="ai-engines-section">
+                <div class="section-title">AI</div>
+                <div class="ai-engines-list" id="aiEnginesList">
+                    <div class="ai-engine-item">
+                        <button class="ai-engine-icon gpt" 
+                                onclick="openAIService('gpt', 'https://chat.openai.com')"
+                                aria-label="ChatGPT 열기"
+                                type="button">
+                            G
+                            <div class="tooltip" role="tooltip">ChatGPT</div>
+                        </button>
+                        <button class="ai-engine-remove" 
+                                onclick="removeAIEngine(event, 'gpt')"
+                                aria-label="ChatGPT 제거"
+                                type="button">×</button>
+                    </div>
+                    
+                    <div class="ai-engine-item">
+                        <button class="ai-engine-icon gemini" 
+                                onclick="openAIService('gemini', 'https://gemini.google.com/app')"
+                                aria-label="Gemini 열기"
+                                type="button">
+                            ✦
+                            <div class="tooltip" role="tooltip">Gemini</div>
+                        </button>
+                        <button class="ai-engine-remove" 
+                                onclick="removeAIEngine(event, 'gemini')"
+                                aria-label="Gemini 제거"
+                                type="button">×</button>
+                    </div>
+                    
+                    <div class="ai-engine-item">
+                        <button class="ai-engine-icon perplexity" 
+                                onclick="openAIService('perplexity', 'https://www.perplexity.ai')"
+                                aria-label="Perplexity 열기"
+                                type="button">
+                            ⟐
+                            <div class="tooltip" role="tooltip">Perplexity</div>
+                        </button>
+                        <button class="ai-engine-remove" 
+                                onclick="removeAIEngine(event, 'perplexity')"
+                                aria-label="Perplexity 제거"
+                                type="button">×</button>
+                    </div>
+                    
+                    <div class="ai-engine-item">
+                        <button class="ai-engine-icon midjourney" 
+                                onclick="openAIService('midjourney', 'https://discord.com/channels/@me')"
+                                aria-label="Midjourney 열기"
+                                type="button">
+                            M
+                            <div class="tooltip" role="tooltip">Midjourney</div>
+                        </button>
+                        <button class="ai-engine-remove" 
+                                onclick="removeAIEngine(event, 'midjourney')"
+                                aria-label="Midjourney 제거"
+                                type="button">×</button>
+                    </div>
+                    
+                    <div class="ai-engine-item">
+                        <button class="ai-engine-icon claude" 
+                                onclick="openAIService('claude', 'https://claude.ai/chat')"
+                                aria-label="Claude 열기"
+                                type="button">
+                            C
+                            <div class="tooltip" role="tooltip">Claude</div>
+                        </button>
+                        <button class="ai-engine-remove" 
+                                onclick="removeAIEngine(event, 'claude')"
+                                aria-label="Claude 제거"
+                                type="button">×</button>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: center; margin-top: 8px;">
+                    <button class="add-ai-btn" 
+                            onclick="showAIHub()"
+                            aria-label="AI 엔진 추가"
+                            type="button">
+                        +
+                        <div class="tooltip" role="tooltip">AI 엔진 추가</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Navigation -->
+            <div class="nav-menu">
+                <button class="nav-item active" 
+                        onclick="showModule('community')"
+                        aria-label="AI 커뮤니티"
+                        type="button">
+                    🌍
+                    <div class="tooltip" role="tooltip">AI 커뮤니티</div>
+                </button>
+                
+                <button class="nav-item" 
+                        onclick="showModule('sharing')"
+                        aria-label="AI 쉐어링"
+                        type="button">
+                    🤝
+                    <div class="tooltip" role="tooltip">AI 쉐어링</div>
+                </button>
+                
+                <button class="nav-item" 
+                        onclick="showModule('healthcare')"
+                        aria-label="헬스케어"
+                        type="button">
+                    🏥
+                    <div class="tooltip" role="tooltip">헬스케어</div>
+                </button>
+                
+                <button class="nav-item" 
+                        onclick="showModule('business')"
+                        aria-label="비즈니스센터"
+                        type="button">
+                    💼
+                    <div class="tooltip" role="tooltip">비즈니스센터</div>
+                </button>
+                
+                <button class="nav-item" 
+                        onclick="showModule('profile')"
+                        aria-label="마이페이지"
+                        type="button">
+                    👤
+                    <div class="tooltip" role="tooltip">마이페이지</div>
+                </button>
+            </div>
+
+
+        </nav>
+
+        <!-- Content Area -->
+        <main class="content-area" role="main">
+            <iframe id="communityFrame" 
+                    class="module-frame active" 
+                    src="data:text/html;charset=utf-8,%3C!DOCTYPE%20html%3E%3Chtml%20lang%3D%22ko%22%3E%3Chead%3E%3Cmeta%20charset%3D%22UTF-8%22%3E%3Cmeta%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2C%20initial-scale%3D1.0%22%3E%3Ctitle%3EAI%20%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0%3C/title%3E%3Cstyle%3Ebody%7Bfont-family%3A%27Inter%27%2C%20sans-serif%3Bbackground%3A%23000%3Bcolor%3A%23fff%3Bpadding%3A2rem%3Btext-align%3Acenter%3Bmin-height%3A100vh%3Bdisplay%3Aflex%3Bflex-direction%3Acolumn%3Bjustify-content%3Acenter%3Balign-items%3Acenter%3B%7D.hero%7Bmax-width%3A600px%3B%7D.title%7Bfont-size%3Aclamp%282rem%2C%204vw%2C%203rem%29%3Bfont-weight%3A700%3Bmargin-bottom%3A1rem%3Bbackground%3Alinear-gradient%28135deg%2C%20%2310b981%2C%20%2334d399%29%3B-webkit-background-clip%3Atext%3B-webkit-text-fill-color%3Atransparent%3Bbackground-clip%3Atext%3B%7D.subtitle%7Bfont-size%3Aclamp%281rem%2C%202vw%2C%201.2rem%29%3Bcolor%3A%23e5e5e5%3Bline-height%3A1.6%3B%7D%3C/style%3E%3C/head%3E%3Cbody%3E%3Cdiv%20class%3D%22hero%22%3E%3Ch1%20class%3D%22title%22%3E🌍%20AI%20커뮤니티%3C/h1%3E%3Cp%20class%3D%22subtitle%22%3EAI%20결과물을%20공유하고%20프롬프트%20템플릿을%20교환하며%2C%20전%20세계%20사용자들과%20AI%20경험을%20나누세요.%3C/p%3E%3C/div%3E%3C/body%3E%3C/html%3E"
+                    title="AI 커뮤니티">
+            </iframe>
+            
+            <iframe id="sharingFrame" 
+                    class="module-frame" 
+                    src="about:blank"
+                    title="AI 쉐어링">
+            </iframe>
+            
+            <iframe id="healthcareFrame" 
+                    class="module-frame" 
+                    src="about:blank"
+                    title="헬스케어">
+            </iframe>
+            
+            <iframe id="businessFrame" 
+                    class="module-frame" 
+                    src="about:blank"
+                    title="비즈니스센터">
+            </iframe>
+            
+            <iframe id="profileFrame" 
+                    class="module-frame" 
+                    src="about:blank"
+                    title="마이페이지">
+            </iframe>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        let currentModule = 'community';
+        let connectedAIServices = ['gpt', 'gemini', 'perplexity', 'midjourney', 'claude'];
+
+        function showModule(moduleName) {
+            // Hide all frames
+            document.querySelectorAll('.module-frame').forEach(frame => {
+                frame.classList.remove('active');
+            });
+            
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show target frame
+            const targetFrame = document.getElementById(moduleName + 'Frame');
+            if (targetFrame) {
+                targetFrame.classList.add('active');
+                currentModule = moduleName;
+                loadModuleContent(moduleName, targetFrame);
+            }
+            
+            // Set active nav item
+            const moduleIndex = {
+                'community': 0,
+                'sharing': 1,
+                'healthcare': 2,
+                'business': 3,
+                'profile': 4
+            };
+            
+            if (moduleIndex[moduleName] !== undefined) {
+                const navItems = document.querySelectorAll('.nav-item');
+                if (navItems[moduleIndex[moduleName]]) {
+                    navItems[moduleIndex[moduleName]].classList.add('active');
+                }
+            }
+        }
+
+        function loadModuleContent(moduleName, frame) {
+            const moduleUrls = {
+                'community': 'data:text/html;charset=utf-8,%3C!DOCTYPE%20html%3E%3Chtml%20lang%3D%22ko%22%3E%3Chead%3E%3Cmeta%20charset%3D%22UTF-8%22%3E%3Cmeta%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2C%20initial-scale%3D1.0%22%3E%3Ctitle%3EAI%20%EC%BB%A4%EB%AE%A4%EB%8B%88%ED%8B%B0%3C/title%3E%3Cstyle%3Ebody%7Bfont-family%3A%27Inter%27%2C%20sans-serif%3Bbackground%3A%23000%3Bcolor%3A%23fff%3Bpadding%3A2rem%3Btext-align%3Acenter%3Bmin-height%3A100vh%3Bdisplay%3Aflex%3Bflex-direction%3Acolumn%3Bjustify-content%3Acenter%3Balign-items%3Acenter%3B%7D.hero%7Bmax-width%3A600px%3B%7D.title%7Bfont-size%3Aclamp%282rem%2C%204vw%2C%203rem%29%3Bfont-weight%3A700%3Bmargin-bottom%3A1rem%3Bbackground%3Alinear-gradient%28135deg%2C%20%2310b981%2C%20%2334d399%29%3B-webkit-background-clip%3Atext%3B-webkit-text-fill-color%3Atransparent%3Bbackground-clip%3Atext%3B%7D.subtitle%7Bfont-size%3Aclamp%281rem%2C%202vw%2C%201.2rem%29%3Bcolor%3A%23e5e5e5%3Bline-height%3A1.6%3B%7D%3C/style%3E%3C/head%3E%3Cbody%3E%3Cdiv%20class%3D%22hero%22%3E%3Ch1%20class%3D%22title%22%3E🌍%20AI%20커뮤니티%3C/h1%3E%3Cp%20class%3D%22subtitle%22%3EAI%20결과물을%20공유하고%20프롬프트%20템플릿을%20교환하며%2C%20전%20세계%20사용자들과%20AI%20경험을%20나누세요.%3C/p%3E%3C/div%3E%3C/body%3E%3C/html%3E',
+                'sharing': 'data:text/html;charset=utf-8,%3C!DOCTYPE%20html%3E%3Chtml%20lang%3D%22ko%22%3E%3Chead%3E%3Cmeta%20charset%3D%22UTF-8%22%3E%3Cmeta%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2C%20initial-scale%3D1.0%22%3E%3Ctitle%3EAI%20%EC%89%90%EC%96%B4%EB%A7%81%3C/title%3E%3Cstyle%3Ebody%7Bfont-family%3A%27Inter%27%2C%20sans-serif%3Bbackground%3A%23000%3Bcolor%3A%23fff%3Bpadding%3A2rem%3Btext-align%3Acenter%3Bmin-height%3A100vh%3Bdisplay%3Aflex%3Bflex-direction%3Acolumn%3Bjustify-content%3Acenter%3Balign-items%3Acenter%3B%7D.hero%7Bmax-width%3A600px%3B%7D.title%7Bfont-size%3Aclamp%282rem%2C%204vw%2C%203rem%29%3Bfont-weight%3A700%3Bmargin-bottom%3A1rem%3Bbackground%3Alinear-gradient%28135deg%2C%20%2310b981%2C%20%2334d399%29%3B-webkit-background-clip%3Atext%3B-webkit-text-fill-color%3Atransparent%3Bbackground-clip%3Atext%3B%7D.subtitle%7Bfont-size%3Aclamp%281rem%2C%202vw%2C%201.2rem%29%3Bcolor%3A%23e5e5e5%3Bline-height%3A1.6%3B%7D%3C/style%3E%3C/head%3E%3Cbody%3E%3Cdiv%20class%3D%22hero%22%3E%3Ch1%20class%3D%22title%22%3E🤝%20AI%20쉐어링%3C/h1%3E%3Cp%20class%3D%22subtitle%22%3EAI%20구독비를%20나누어%20부담하고%2C%20함께%20사용하여%20최대%2080%25까지%20비용을%20절약하세요.%3C/p%3E%3C/div%3E%3C/body%3E%3C/html%3E',
+                'healthcare': 'data:text/html;charset=utf-8,%3C!DOCTYPE%20html%3E%3Chtml%20lang%3D%22ko%22%3E%3Chead%3E%3Cmeta%20charset%3D%22UTF-8%22%3E%3Cmeta%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2C%20initial-scale%3D1.0%22%3E%3Ctitle%3E%ED%97%AC%EC%8A%A4%EC%BC%80%EC%96%B4%3C/title%3E%3Cstyle%3Ebody%7Bfont-family%3A%27Inter%27%2C%20sans-serif%3Bbackground%3A%23000%3Bcolor%3A%23fff%3Bpadding%3A2rem%3Btext-align%3Acenter%3Bmin-height%3A100vh%3Bdisplay%3Aflex%3Bflex-direction%3Acolumn%3Bjustify-content%3Acenter%3Balign-items%3Acenter%3B%7D.hero%7Bmax-width%3A600px%3B%7D.title%7Bfont-size%3Aclamp%282rem%2C%204vw%2C%203rem%29%3Bfont-weight%3A700%3Bmargin-bottom%3A1rem%3Bbackground%3Alinear-gradient%28135deg%2C%20%2310b981%2C%20%2334d399%29%3B-webkit-background-clip%3Atext%3B-webkit-text-fill-color%3Atransparent%3Bbackground-clip%3Atext%3B%7D.subtitle%7Bfont-size%3Aclamp%281rem%2C%202vw%2C%201.2rem%29%3Bcolor%3A%23e5e5e5%3Bline-height%3A1.6%3B%7D%3C/style%3E%3C/head%3E%3Cbody%3E%3Cdiv%20class%3D%22hero%22%3E%3Ch1%20class%3D%22title%22%3E🏥%20헬스케어%3C/h1%3E%3Cp%20class%3D%22subtitle%22%3EAI%20기반%20건강%20관리%20및%20의료%20상담%20서비스를%20제공합니다.%3C/p%3E%3C/div%3E%3C/body%3E%3C/html%3E',
+                'business': 'data:text/html;charset=utf-8,%3C!DOCTYPE%20html%3E%3Chtml%20lang%3D%22ko%22%3E%3Chead%3E%3Cmeta%20charset%3D%22UTF-8%22%3E%3Cmeta%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2C%20initial-scale%3D1.0%22%3E%3Ctitle%3E%EB%B9%84%EC%A6%88%EB%8B%88%EC%8A%A4%20%EC%84%BC%ED%84%B0%3C/title%3E%3Cstyle%3Ebody%7Bfont-family%3A%27Inter%27%2C%20sans-serif%3Bbackground%3A%23000%3Bcolor%3A%23fff%3Bpadding%3A2rem%3Btext-align%3Acenter%3Bmin-height%3A100vh%3Bdisplay%3Aflex%3Bflex-direction%3Acolumn%3Bjustify-content%3Acenter%3Balign-items%3Acenter%3B%7D.hero%7Bmax-width%3A600px%3B%7D.title%7Bfont-size%3Aclamp%282rem%2C%204vw%2C%203rem%29%3Bfont-weight%3A700%3Bmargin-bottom%3A1rem%3Bbackground%3Alinear-gradient%28135deg%2C%20%2310b981%2C%20%2334d399%29%3B-webkit-background-clip%3Atext%3B-webkit-text-fill-color%3Atransparent%3Bbackground-clip%3Atext%3B%7D.subtitle%7Bfont-size%3Aclamp%281rem%2C%202vw%2C%201.2rem%29%3Bcolor%3A%23e5e5e5%3Bline-height%3A1.6%3B%7D%3C/style%3E%3C/head%3E%3Cbody%3E%3Cdiv%20class%3D%22hero%22%3E%3Ch1%20class%3D%22title%22%3E💼%20비즈니스%20센터%3C/h1%3E%3Cp%20class%3D%22subtitle%22%3E나만의%20AI%20엔진을%20제작하고%20판매하여%20새로운%20수익원을%20창출하세요.%3C/p%3E%3C/div%3E%3C/body%3E%3C/html%3E',
+                'profile': 'data:text/html;charset=utf-8,%3C!DOCTYPE%20html%3E%3Chtml%20lang%3D%22ko%22%3E%3Chead%3E%3Cmeta%20charset%3D%22UTF-8%22%3E%3Cmeta%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2C%20initial-scale%3D1.0%22%3E%3Ctitle%3E%EB%A7%88%EC%9D%B4%20%ED%8E%98%EC%9D%B4%EC%A7%80%3C/title%3E%3Cstyle%3Ebody%7Bfont-family%3A%27Inter%27%2C%20sans-serif%3Bbackground%3A%23000%3Bcolor%3A%23fff%3Bpadding%3A2rem%3Btext-align%3Acenter%3Bmin-height%3A100vh%3Bdisplay%3Aflex%3Bflex-direction%3Acolumn%3Bjustify-content%3Acenter%3Balign-items%3Acenter%3B%7D.hero%7Bmax-width%3A600px%3B%7D.title%7Bfont-size%3Aclamp%282rem%2C%204vw%2C%203rem%29%3Bfont-weight%3A700%3Bmargin-bottom%3A1rem%3Bbackground%3Alinear-gradient%28135deg%2C%20%2310b981%2C%20%2334d399%29%3B-webkit-background-clip%3Atext%3B-webkit-text-fill-color%3Atransparent%3Bbackground-clip%3Atext%3B%7D.subtitle%7Bfont-size%3Aclamp%281rem%2C%202vw%2C%201.2rem%29%3Bcolor%3A%23e5e5e5%3Bline-height%3A1.6%3B%7D%3C/style%3E%3C/head%3E%3Cbody%3E%3Cdiv%20class%3D%22hero%22%3E%3Ch1%20class%3D%22title%22%3E👤%20마이%20페이지%3C/h1%3E%3Cp%20class%3D%22subtitle%22%3E계정%20설정%2C%20사용%20통계%2C%20개인화%20옵션을%20관리하세요.%3C/p%3E%3C/div%3E%3C/body%3E%3C/html%3E'
+            };
+            
+            if (moduleUrls[moduleName]) {
+                frame.src = moduleUrls[moduleName];
+            }
+        }
+
+        function openAIService(serviceName, url) {
+            showWebLimitationModal(serviceName, url);
+        }
+
+        function showWebLimitationModal(serviceName, url) {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-icon">⚠️</div>
+                        <h2 class="modal-title">웹 버전 제한</h2>
+                        <p class="modal-description">웹에서는 ${serviceName}이(가) 새 창에서 열립니다</p>
+                    </div>
+                    <div class="modal-info">
+                        <h3>💡 완전한 AI 통합 경험을 원하신다면?</h3>
+                        <p>One AI 앱을 다운로드하면 모든 AI를 한 화면에서 사용할 수 있습니다!</p>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-primary" onclick="window.open('${url}', '_blank'); closeModal();">새 창에서 열기</button>
+                        <button class="btn btn-secondary" onclick="downloadApp(); closeModal();">앱 다운로드</button>
+                        <button class="btn btn-ghost" onclick="closeModal();">닫기</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Focus first button
+            const firstButton = modal.querySelector('button');
+            if (firstButton) firstButton.focus();
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function removeAIEngine(event, serviceId) {
+            event.stopPropagation();
+            
+            const serviceNames = {
+                gpt: 'ChatGPT',
+                gemini: 'Gemini',
+                perplexity: 'Perplexity',
+                midjourney: 'Midjourney',
+                claude: 'Claude'
+            };
+            
+            if (confirm(`${serviceNames[serviceId]} AI 엔진을 사이드바에서 제거하시겠습니까?`)) {
+                connectedAIServices = connectedAIServices.filter(id => id !== serviceId);
+                
+                const aiItem = event.target.closest('.ai-engine-item');
+                aiItem.remove();
+                
+                showToast(`${serviceNames[serviceId]}이(가) 제거되었습니다.`, 'success');
+            }
+        }
+
+        function addAIServiceToSidebar(serviceId, icon, name, url) {
+            if (connectedAIServices.includes(serviceId)) {
+                showToast('이미 추가된 AI 서비스입니다.', 'warning');
+                return;
+            }
+
+            const aiEnginesList = document.getElementById('aiEnginesList');
+            const newAIItem = document.createElement('div');
+            newAIItem.className = 'ai-engine-item';
+            newAIItem.innerHTML = `
+                <button class="ai-engine-icon ${serviceId}" onclick="openAIService('${serviceId}', '${url}')" aria-label="${name} 열기" type="button">
+                    ${icon}
+                    <div class="tooltip" role="tooltip">${name}</div>
+                </button>
+                <button class="ai-engine-remove" onclick="removeAIEngine(event, '${serviceId}')" aria-label="${name} 제거" type="button">×</button>
+            `;
+            
+            const addBtn = document.querySelector('.add-ai-btn').parentElement;
+            aiEnginesList.insertBefore(newAIItem, addBtn);
+            
+            connectedAIServices.push(serviceId);
+            
+            showToast(`${name}이(가) 추가되었습니다!`, 'success');
+        }
+
+        function updateConnectedCount() {
+            // 이 함수는 더 이상 필요 없음
+        }
+
+        function downloadApp() {
+            const userAgent = navigator.userAgent;
+            let platform = '';
+            
+            if (/Android/i.test(userAgent)) {
+                platform = 'Android';
+            } else if (/iPhone|iPad|iPod/i.test(userAgent)) {
+                platform = 'iOS';
+            } else if (/Windows/i.test(userAgent)) {
+                platform = 'Windows';
+            } else if (/Mac/i.test(userAgent)) {
+                platform = 'macOS';
+            } else {
+                platform = 'Linux';
+            }
+            
+            showToast(`${platform}용 One AI 앱 다운로드를 시작합니다.`, 'info');
+        }
+
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <span class="toast-icon">${icons[type]}</span>
+                    <span class="toast-message">${message}</span>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Auto dismiss
+            setTimeout(() => {
+                toast.classList.add('dismissing');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        function showAIHub() {
+            showToast('AI 허브 기능은 곧 출시됩니다!', 'info');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('One AI 로드 완료');
+            showModule('community');
+            
+            setTimeout(() => {
+                showToast('One AI에 오신 것을 환영합니다! 🎉', 'success');
+            }, 1000);
+        });
+
+        // Global functions
+        window.showModule = showModule;
+        window.downloadApp = downloadApp;
+        window.addAIServiceToSidebar = addAIServiceToSidebar;
+        window.closeModal = closeModal;
+    </script>
+</body>
+</html>
