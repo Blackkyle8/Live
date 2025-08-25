@@ -1,0 +1,14 @@
+{
+  "name": "rakuten-live-studio",
+  "version": "1.0.0",
+  "description": "Rakuten Live Studio - Professional Live Streaming Solution",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "serve": "python3 -m http.server 8080",
+    "dev": "python3 -m http.server 8080"
+  },
+  "keywords": ["live-streaming", "react", "broadcasting", "rakuten"],
+  "author": "Blackkyle8",
+  "license": "MIT"
+}

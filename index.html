@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rakuten Live Studio</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // Simple SVG icon components
+        const IconWrapper = ({ className = "w-4 h-4", children, ...props }) => (
+            <svg 
+                className={className} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24" 
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                {...props}
+            >
+                {children}
+            </svg>
+        );
+
+        const Play = (props) => (
+            <IconWrapper {...props}>
+                <polygon points="5,3 19,12 5,21"></polygon>
+            </IconWrapper>
+        );
+
+        const Pause = (props) => (
+            <IconWrapper {...props}>
+                <rect x="6" y="4" width="4" height="16"></rect>
+                <rect x="14" y="4" width="4" height="16"></rect>
+            </IconWrapper>
+        );
+
+        const Square = (props) => (
+            <IconWrapper {...props}>
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            </IconWrapper>
+        );
+
+        const Settings = (props) => (
+            <IconWrapper {...props}>
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1m7.5-3a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"></path>
+            </IconWrapper>
+        );
+
+        const Monitor = (props) => (
+            <IconWrapper {...props}>
+                <rect x="2" y="4" width="20" height="12" rx="2"></rect>
+                <line x1="8" y1="20" x2="16" y2="20"></line>
+                <line x1="12" y1="16" x2="12" y2="20"></line>
+            </IconWrapper>
+        );
+
+        const Mic = (props) => (
+            <IconWrapper {...props}>
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+            </IconWrapper>
+        );
+
+        const MicOff = (props) => (
+            <IconWrapper {...props}>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+                <path d="M9 9v3a3 3 0 0 0 5.12 2.12L9 9Z"></path>
+                <path d="M12 2a3 3 0 0 1 3 3v7M19 10v2a7 7 0 0 1-.72 3.15"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+            </IconWrapper>
+        );
+
+        const Eye = (props) => (
+            <IconWrapper {...props}>
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </IconWrapper>
+        );
+
+        const EyeOff = (props) => (
+            <IconWrapper {...props}>
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+            </IconWrapper>
+        );
+
+        const Plus = (props) => (
+            <IconWrapper {...props}>
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </IconWrapper>
+        );
+
+        const Menu = (props) => (
+            <IconWrapper {...props}>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </IconWrapper>
+        );
+
+        const X = (props) => (
+            <IconWrapper {...props}>
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </IconWrapper>
+        );
+
+        const ChevronDown = (props) => (
+            <IconWrapper {...props}>
+                <polyline points="6,9 12,15 18,9"></polyline>
+            </IconWrapper>
+        );
+
+        const ChevronUp = (props) => (
+            <IconWrapper {...props}>
+                <polyline points="18,15 12,9 6,15"></polyline>
+            </IconWrapper>
+        );
+
+        const AlertTriangle = (props) => (
+            <IconWrapper {...props}>
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </IconWrapper>
+        );
+
+        const CheckCircle = (props) => (
+            <IconWrapper {...props}>
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22,4 12,14.01 9,11.01"></polyline>
+            </IconWrapper>
+        );
+
+        const Info = (props) => (
+            <IconWrapper {...props}>
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </IconWrapper>
+        );
+
+        // Add more icons as needed - keeping the most commonly used ones for now
+        const Users = (props) => (
+            <IconWrapper {...props}>
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </IconWrapper>
+        );
+
+        const ShoppingCart = (props) => (
+            <IconWrapper {...props}>
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </IconWrapper>
+        );
+
+        const MessageSquare = (props) => (
+            <IconWrapper {...props}>
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </IconWrapper>
+        );
+
+        // For any missing icons, create a default placeholder
+        const DefaultIcon = (props) => (
+            <IconWrapper {...props}>
+                <circle cx="12" cy="12" r="10"></circle>
+            </IconWrapper>
+        );
+
+        // Create aliases for missing icons to prevent errors
+        const Lock = DefaultIcon;
+        const Unlock = DefaultIcon;
+        const RotateCw = DefaultIcon;
+        const Volume2 = DefaultIcon;
+        const VolumeX = DefaultIcon;
+        const Trash2 = DefaultIcon;
+        const Edit = DefaultIcon;
+        const Camera = DefaultIcon;
+        const ScreenShare = DefaultIcon;
+        const Image = DefaultIcon;
+        const Globe = DefaultIcon;
+        const Type = DefaultIcon;
+        const Timer = DefaultIcon;
+        const Star = DefaultIcon;
+        const TrendingUp = DefaultIcon;
+        const DollarSign = DefaultIcon;
+        const BarChart3 = DefaultIcon;
+        const Bell = DefaultIcon;
+        const User = DefaultIcon;
+        const Save = DefaultIcon;
+        const Upload = DefaultIcon;
+        const Download = DefaultIcon;
+        const Filter = DefaultIcon;
+        const Search = DefaultIcon;
+        const RefreshCw = DefaultIcon;
+        const Zap = DefaultIcon;
+        const Link = DefaultIcon;
+        const Shield = DefaultIcon;
+        const CreditCard = DefaultIcon;
+        const FileText = DefaultIcon;
+        const Code = DefaultIcon;
+        const HelpCircle = DefaultIcon;
+        const Headphones = DefaultIcon;
+        const Gamepad2 = DefaultIcon;
+        const Smartphone = DefaultIcon;
+        const Tv = DefaultIcon;
+        const Radio = DefaultIcon;
+        const Wifi = DefaultIcon;
+        const WifiOff = DefaultIcon;
+        const Calendar = DefaultIcon;
+        const Clock = DefaultIcon;
+        const Activity = DefaultIcon;
+        const Target = DefaultIcon;
+        const MapPin = DefaultIcon;
+        const Heart = DefaultIcon;
+        const ThumbsUp = DefaultIcon;
+        const MessageCircle = DefaultIcon;
+        const Share2 = DefaultIcon;
+        const Copy = DefaultIcon;
+        const ExternalLink = DefaultIcon;
+        const Database = DefaultIcon;
+        const ArrowRight = DefaultIcon;
+        const Mic2 = DefaultIcon;
+        const Video = DefaultIcon;
+        const VideoOff = DefaultIcon;
+        const Send = DefaultIcon;
+        const Archive = DefaultIcon;
+        const Layers = DefaultIcon;
+        const PieChart = DefaultIcon;
+        const LineChart = DefaultIcon;
+        const BarChart = DefaultIcon;
+        const UserPlus = DefaultIcon;
+        const Hash = DefaultIcon;
+        const Palette = DefaultIcon;
+        const Sliders = DefaultIcon;
+        const Package = DefaultIcon;
+        const MousePointer = DefaultIcon;
+        const Maximize = DefaultIcon;
+        const Minimize = DefaultIcon;
+        const MoreHorizontal = DefaultIcon;
+        const ChevronRight = DefaultIcon;
+        const ChevronLeft = DefaultIcon;
+        const Power = DefaultIcon;
+
+        // Enhanced Design System
+        const Button = ({ variant = "primary", size = "md", block = false, className = "", children, ...props }) => {
+          const base = "inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed";
+          const sizes = {
+            xs: "h-7 text-xs gap-1 px-2.5",
+            sm: "h-8 text-sm gap-1.5 px-3",
+            md: "h-10 text-sm gap-2 px-4",
+            lg: "h-12 text-base gap-2.5 px-6",
+            xl: "h-14 text-lg gap-3 px-8"
+          };
+          const variants = {
+            primary: "bg-[#BF0000] text-white hover:bg-[#A00000] active:bg-[#800000] focus-visible:ring-[#BF0000] shadow-lg",
+            secondary: "bg-zinc-900 text-white border border-zinc-800 hover:bg-zinc-800 active:bg-zinc-700 focus-visible:ring-zinc-600",
+            ghost: "bg-transparent text-zinc-300 hover:bg-zinc-900 hover:text-white active:bg-zinc-800",
+            tertiary: "bg-zinc-950 text-zinc-300 hover:bg-zinc-900 active:bg-zinc-800",
+            success: "bg-green-600 text-white hover:bg-green-700",
+            warning: "bg-yellow-600 text-white hover:bg-yellow-700",
+            danger: "bg-red-600 text-white hover:bg-red-700"
+          };
+
+          return React.createElement('button', {
+            className: `${base} ${sizes[size]} ${variants[variant]} ${block ? "w-full" : ""} ${className}`,
+            ...props
+          }, children);
+        };
+
+const Card = ({ className = "", children, ...props }) => (
+  <div className={`bg-black border border-zinc-900 rounded-lg shadow-xl ${className}`} {...props}>
+    {children}
+  </div>
+);
+
+const Alert = ({ tone = "info", children, className = "" }) => {
+  const tones = {
+    success: { bg: "bg-green-600/20", border: "border-green-600", text: "text-white", icon: CheckCircle },
+    info: { bg: "bg-zinc-900/50", border: "border-zinc-700", text: "text-white", icon: Info },
+    warning: { bg: "bg-yellow-600/20", border: "border-yellow-600", text: "text-white", icon: AlertTriangle },
+    danger: { bg: "bg-red-600/20", border: "border-red-600", text: "text-white", icon: AlertTriangle }
+  };
+
+  const toneStyle = tones[tone];
+  const IconComponent = toneStyle.icon;
+
+  return (
+    <div className={`${toneStyle.bg} ${toneStyle.border} ${toneStyle.text} border rounded-lg px-4 py-3 text-sm shadow-lg ${className}`}>
+      <div className="flex items-center space-x-2">
+        <IconComponent className="w-4 h-4" />
+        <div>{children}</div>
+      </div>
+    </div>
+  );
+};
+
+const Tag = ({ color = "red", children, size = "sm" }) => {
+  const colors = {
+    red: "bg-[#BF0000]/20 text-[#ffffff] border-[#BF0000]/50",
+    gray: "bg-zinc-900/50 text-zinc-300 border-zinc-700/50",
+    green: "bg-green-600/20 text-green-400 border-green-600/50",
+    blue: "bg-blue-600/20 text-blue-400 border-blue-600/50",
+    yellow: "bg-yellow-600/20 text-yellow-400 border-yellow-600/50"
+  };
+
+  const sizes = {
+    xs: "h-5 px-2 text-xs",
+    sm: "h-6 px-3 text-xs",
+    md: "h-7 px-3 text-sm"
+  };
+
+  return (
+    <span className={`inline-flex items-center ${sizes[size]} rounded-full border ${colors[color]} font-semibold`}>
+      {children}
+    </span>
+  );
+};
+
+const TextField = ({ label, error, className = "", ...props }) => (
+  <div className="space-y-2">
+    {label && <label className="block text-sm font-medium text-[#ffffff]">{label}</label>}
+    <input 
+      className={`w-full px-4 py-3 bg-black border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:border-[#BF0000] focus:ring-2 focus:ring-[#BF0000]/20 focus:outline-none transition-all ${error ? 'border-[#BF0000]' : ''} ${className}`}
+      {...props}
+    />
+    {error && <p className="text-sm text-[#ffffff]">{error}</p>}
+  </div>
+);
+
+const Select = ({ label, options, className = "", ...props }) => (
+  <div className="space-y-2">
+    {label && <label className="block text-sm font-medium text-[#ffffff]">{label}</label>}
+    <select 
+      className={`w-full px-4 py-3 bg-black border border-zinc-800 rounded-lg text-white focus:border-[#BF0000] focus:ring-2 focus:ring-[#BF0000]/20 focus:outline-none transition-all ${className}`}
+      {...props}
+    >
+      {options.map(option => (
+        <option key={option.value} value={option.value} className="bg-black text-white">
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
+const Switch = ({ checked, onChange, label, className = "" }) => (
+  <div className={`flex items-center space-x-3 ${className}`}>
+    <button
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+        checked ? 'bg-[#BF0000]' : 'bg-zinc-700'
+      }`}
+    >
+      <span
+        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+          checked ? 'translate-x-6' : 'translate-x-1'
+        }`}
+      />
+    </button>
+    {label && <span className="text-sm text-white">{label}</span>}
+  </div>
+);
+
+// Main Application Component
+const RakutenLiveStudio = () => {
+  const [currentRoute, setCurrentRoute] = useState('/studio');
+  const [isLive, setIsLive] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isVirtualCamera, setIsVirtualCamera] = useState(false);
+  const [selectedScene, setSelectedScene] = useState(0);
+  const [chatVisible, setChatVisible] = useState(true);
+  const [commerceVisible, setCommerceVisible] = useState(false);
+  const [showGoLiveModal, setShowGoLiveModal] = useState(false);
+  const [networkHealth, setNetworkHealth] = useState({ bitrate: 2500, fps: 30, drops: 0.2, latency: 3.2 });
+  
+  // Enhanced state for all sections
+  const [scenes, setScenes] = useState([
+    { id: 1, name: "메인 카메라", active: true, sources: 3, preset: "gaming" },
+    { id: 2, name: "화면 공유", active: false, sources: 2, preset: "presentation" },
+    { id: 3, name: "상품 소개", active: false, sources: 4, preset: "commerce" },
+    { id: 4, name: "채팅 집중", active: false, sources: 2, preset: "chat" }
+  ]);
+
+  const [sources, setSources] = useState([
+    { id: 1, name: "웹캠 HD", type: "camera", visible: true, locked: false, volume: 80, muted: false, device: "Logitech C920" },
+    { id: 2, name: "마이크", type: "audio", visible: true, locked: false, volume: 60, muted: false, device: "Blue Yeti" },
+    { id: 3, name: "화면 캡처", type: "display", visible: false, locked: false, volume: 0, muted: true, device: "Desktop" },
+    { id: 4, name: "오버레이", type: "overlay", visible: true, locked: true, volume: 0, muted: true, device: "Graphics" },
+    { id: 5, name: "BGM", type: "audio", visible: true, locked: false, volume: 30, muted: false, device: "Media Player" }
+  ]);
+
+  const [platforms] = useState([
+    { name: "YouTube", connected: true, status: "live", viewers: 1234, icon: "🔴", streamKey: "live_abc123def456" },
+    { name: "TikTok", connected: true, status: "ready", viewers: 567, icon: "⚡", streamKey: "tk_789xyz012" },
+    { name: "Instagram", connected: false, status: "disconnected", viewers: 0, icon: "📷", streamKey: "" },
+    { name: "Twitch", connected: true, status: "ready", viewers: 89, icon: "💜", streamKey: "tw_345ghi678" }
+  ]);
+
+  // Analytics data
+  const [analyticsData] = useState({
+    totalViewers: 1890,
+    avgWatchTime: "12:34",
+    chatMessages: 2847,
+    revenue: 284500,
+    peakViewers: 2156,
+    engagement: 78.5,
+    dailyStats: [
+      { date: "2025-08-08", viewers: 1234, revenue: 89000, duration: "2:15" },
+      { date: "2025-08-09", viewers: 1456, revenue: 102000, duration: "2:45" },
+      { date: "2025-08-10", viewers: 1678, revenue: 125000, duration: "3:20" },
+      { date: "2025-08-11", viewers: 1890, revenue: 145000, duration: "2:55" },
+      { date: "2025-08-12", viewers: 2156, revenue: 178000, duration: "3:45" },
+      { date: "2025-08-13", viewers: 1923, revenue: 156000, duration: "3:10" },
+      { date: "2025-08-14", viewers: 2034, revenue: 189000, duration: "3:30" }
+    ]
+  });
+
+  // Chat messages
+  const [chatMessages, setChatMessages] = useState([
+    { id: 1, user: "라쿠텐팬123", message: "안녕하세요! 오늘 방송 기대됩니다", time: "14:23", platform: "YouTube", avatar: "🔴" },
+    { id: 2, user: "쇼핑러버", message: "상품 링크 좀 주세요", time: "14:24", platform: "TikTok", avatar: "⚡" },
+    { id: 3, user: "뷰어999", message: "화질 정말 좋네요 👍", time: "14:25", platform: "YouTube", avatar: "🔴" },
+    { id: 4, user: "라이브조아", message: "구독 눌렀어요!", time: "14:26", platform: "Instagram", avatar: "📷" },
+    { id: 5, user: "스트리머응원", message: "오늘도 좋은 방송 감사합니다", time: "14:27", platform: "Twitch", avatar: "💜" }
+  ]);
+
+  // Commerce products
+  const [products, setProducts] = useState([
+    { id: 1, name: "라쿠텐 무선 이어폰", price: 89000, originalPrice: 120000, image: "🎧", sales: 23, status: "active", category: "전자제품" },
+    { id: 2, name: "스마트 워치", price: 159000, originalPrice: 199000, image: "⌚", sales: 12, status: "active", category: "전자제품" },
+    { id: 3, name: "노트북 스탠드", price: 35000, originalPrice: 45000, image: "💻", sales: 45, status: "inactive", category: "액세서리" },
+    { id: 4, name: "LED 링라이트", price: 65000, originalPrice: 89000, image: "💡", sales: 8, status: "active", category: "방송장비" }
+  ]);
+
+  // Settings state
+  const [settings, setSettings] = useState({
+    video: {
+      resolution: "1920x1080",
+      fps: 60,
+      bitrate: 2500,
+      encoder: "x264",
+      quality: "high"
+    },
+    audio: {
+      sampleRate: 48000,
+      bitrate: 128,
+      channels: "stereo",
+      suppressNoise: true,
+      gainControl: true
+    },
+    stream: {
+      lowLatency: false,
+      multiStream: true,
+      autoRecord: true,
+      autoReconnect: true
+    },
+    notifications: {
+      newFollower: true,
+      donations: true,
+      chatMentions: true,
+      systemAlerts: true
+    }
+  });
+
+  const navigation = [
+    { name: "스튜디오", path: "/studio", icon: Monitor },
+    { name: "대시보드", path: "/dashboard", icon: BarChart3 },
+    { name: "방송관리", path: "/broadcast", icon: Settings },
+    { name: "채팅", path: "/chat", icon: MessageSquare },
+    { name: "커머스", path: "/commerce", icon: ShoppingCart },
+    { name: "통계", path: "/analytics", icon: TrendingUp },
+    { name: "설정", path: "/settings", icon: Settings },
+    { name: "플러그인", path: "/plugins", icon: Code }
+  ];
+
+  // Go Live Modal Component
+  const GoLiveModal = () => {
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [selectedPlatforms, setSelectedPlatforms] = useState(["YouTube"]);
+
+    if (!showGoLiveModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+        <Card className="w-full max-w-2xl mx-4 p-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-[#ffffff]">라이브 방송 시작</h2>
+            <Button variant="ghost" size="sm" onClick={() => setShowGoLiveModal(false)}>
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+          
+          <div className="space-y-8">
+            <TextField 
+              label="방송 제목 *"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="방송 제목을 입력하세요"
+              className="text-base"
+            />
+
+            <div>
+              <label className="block text-sm font-medium text-[#ffffff] mb-3">방송 설명</label>
+              <textarea 
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full h-28 px-4 py-3 bg-black border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:border-[#BF0000] focus:ring-2 focus:ring-[#BF0000]/20 focus:outline-none resize-none text-base"
+                placeholder="방송에 대한 간단한 설명을 입력하세요"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#ffffff] mb-4">플랫폼 선택 *</label>
+              <div className="grid grid-cols-2 gap-4">
+                {platforms.map(platform => (
+                  <label key={platform.name} className="flex items-center p-4 bg-zinc-950 rounded-lg cursor-pointer hover:bg-zinc-900 transition-colors border border-zinc-900">
+                    <input 
+                      type="checkbox"
+                      checked={selectedPlatforms.includes(platform.name)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedPlatforms([...selectedPlatforms, platform.name]);
+                        } else {
+                          setSelectedPlatforms(selectedPlatforms.filter(p => p !== platform.name));
+                        }
+                      }}
+                      className="mr-4 w-5 h-5 text-[#ffffff] bg-black border-zinc-700 rounded focus:ring-[#BF0000]"
+                      disabled={!platform.connected}
+                    />
+                    <span className="text-xl mr-3">{platform.icon}</span>
+                    <div className="flex-1">
+                      <div className={`font-semibold text-base ${platform.connected ? 'text-[#ffffff]' : 'text-zinc-400'}`}>
+                        {platform.name}
+                      </div>
+                      <div className="text-sm text-zinc-400">
+                        {platform.connected ? '연결됨' : '연결 필요'}
+                      </div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <label className="flex items-center space-x-3 p-4 bg-zinc-950 rounded-lg border border-zinc-900">
+                <input type="checkbox" className="w-5 h-5 text-[#ffffff] bg-black border-zinc-700 rounded" />
+                <span className="text-white text-base">16:9 + 9:16 동시 송출</span>
+              </label>
+              <label className="flex items-center space-x-3 p-4 bg-zinc-950 rounded-lg border border-zinc-900">
+                <input type="checkbox" className="w-5 h-5 text-[#ffffff] bg-black border-zinc-700 rounded" />
+                <span className="text-white text-base">초저지연 모드</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="flex gap-4 mt-10">
+            <Button variant="secondary" size="lg" onClick={() => setShowGoLiveModal(false)}>
+              취소
+            </Button>
+            <Button variant="tertiary" size="lg">
+              <Play className="w-5 h-5" />
+              테스트 송출
+            </Button>
+            <Button 
+              variant="primary" 
+              size="lg"
+              className="flex-1"
+              onClick={() => {
+                if (title && selectedPlatforms.length > 0) {
+                  setIsLive(true);
+                  setShowGoLiveModal(false);
+                }
+              }}
+              disabled={!title || selectedPlatforms.length === 0}
+            >
+              <Play className="w-6 h-6" />
+              GO LIVE
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
+  // Studio Layout Component
+  const StudioLayout = () => (
+    <div className="flex-1 flex flex-col bg-black">
+      {/* Enhanced Top Status Bar */}
+      <div className="h-20 bg-zinc-950 border-b border-zinc-900 flex items-center justify-between px-8">
+        <div className="flex items-center space-x-10">
+          {/* Platform Status */}
+          <div className="flex items-center space-x-4">
+            {platforms.map(platform => (
+              <div key={platform.name} className="flex items-center space-x-3 p-3 rounded-lg bg-black border border-zinc-900">
+                <div className={`w-3 h-3 rounded-full ${
+                  platform.status === 'live' ? 'bg-[#BF0000] animate-pulse' : 
+                  platform.status === 'ready' ? 'bg-[#BF0000]' : 'bg-zinc-600'
+                }`} />
+                <span className="text-sm font-semibold text-[#ffffff]">{platform.name}</span>
+                {platform.viewers > 0 && (
+                  <span className="text-xs text-zinc-300">{platform.viewers}</span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Enhanced Network Stats */}
+          <div className="flex items-center space-x-8 text-sm">
+            <div className="flex items-center space-x-2">
+              <Wifi className="w-5 h-5 text-[#ffffff]" />
+              <span className="text-[#ffffff] font-mono font-semibold text-base">{networkHealth.bitrate}</span>
+              <span className="text-zinc-400">kbps</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Activity className="w-5 h-5 text-[#ffffff]" />
+              <span className="text-[#ffffff] font-mono font-semibold text-base">{networkHealth.fps}</span>
+              <span className="text-zinc-400">fps</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Target className={`w-5 h-5 ${networkHealth.drops > 1 ? 'text-[#ffffff]' : 'text-[#ffffff]'}`} />
+              <span className={`font-mono font-semibold text-base ${networkHealth.drops > 1 ? 'text-[#ffffff]' : 'text-[#ffffff]'}`}>
+                {networkHealth.drops}%
+              </span>
+              <span className="text-zinc-400">drops</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Clock className={`w-5 h-5 ${networkHealth.latency > 5 ? 'text-[#ffffff]' : 'text-[#ffffff]'}`} />
+              <span className={`font-mono font-semibold text-base ${networkHealth.latency > 5 ? 'text-[#ffffff]' : 'text-[#ffffff]'}`}>
+                {networkHealth.latency}s
+              </span>
+              <span className="text-zinc-400">delay</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          {/* Enhanced Control Buttons */}
+          <Button 
+            size="lg" 
+            variant={isRecording ? "primary" : "ghost"}
+            onClick={() => setIsRecording(!isRecording)}
+            className="min-w-[120px]"
+          >
+            {isRecording ? (
+              <>
+                <Square className="w-5 h-5" />
+                REC
+              </>
+            ) : (
+              <>
+                <div className="w-5 h-5 bg-[#BF0000] rounded-full" />
+                Record
+              </>
+            )}
+          </Button>
+
+          <Button 
+            size="lg" 
+            variant={isVirtualCamera ? "primary" : "ghost"}
+            onClick={() => setIsVirtualCamera(!isVirtualCamera)}
+            className="min-w-[140px]"
+          >
+            <Camera className="w-5 h-5" />
+            Virtual Cam
+          </Button>
+
+          {/* Enhanced Go Live Button */}
+          <Button 
+            size="xl" 
+            variant={isLive ? "danger" : "primary"}
+            onClick={() => isLive ? setIsLive(false) : setShowGoLiveModal(true)}
+            className="min-w-[160px] font-bold text-lg"
+            id="rl-live-go-btn"
+          >
+            {isLive ? (
+              <>
+                <Square className="w-7 h-7" />
+                END LIVE
+              </>
+            ) : (
+              <>
+                <Play className="w-7 h-7" />
+                GO LIVE
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+
+      {/* Enhanced Main Content Area */}
+      <div className="flex-1 grid grid-cols-12 gap-8 p-8">
+        {/* Left Side - Larger Monitors */}
+        <div className="col-span-8 space-y-8">
+          {/* Larger Program and Preview Monitors */}
+          <div className="grid grid-cols-2 gap-8 h-[650px]">
+            {/* Program Monitor */}
+            <Card className="relative overflow-hidden" id="rl-prog-monitor">
+              <div className="absolute top-6 left-6 bg-[#BF0000] text-white px-4 py-3 text-sm font-bold rounded-lg shadow-lg z-10">
+                PROGRAM
+              </div>
+              <div className="flex items-center justify-center h-full bg-gradient-to-br from-zinc-950 to-black">
+                <div className="text-center">
+                  <div className="w-28 h-28 bg-gradient-to-br from-[#BF0000] to-[#990000] rounded-full flex items-center justify-center mb-6 mx-auto shadow-2xl">
+                    <Camera className="w-16 h-16 text-white" />
+                  </div>
+                  <p className="text-2xl text-[#ffffff] font-bold">프로그램 출력</p>
+                  <p className="text-base text-zinc-400 mt-2">1920x1080 • 60fps</p>
+                </div>
+              </div>
+              {isLive && (
+                <div className="absolute top-6 right-6 bg-[#BF0000] text-white px-4 py-3 text-sm font-bold rounded-lg animate-pulse shadow-lg">
+                  🔴 LIVE
+                </div>
+              )}
+              <div className="absolute bottom-6 left-6 right-6 flex justify-between text-sm text-zinc-400">
+                <span>Scene: <span className="text-[#ffffff] font-semibold">{scenes[selectedScene]?.name}</span></span>
+                <span>CPU: <span className="text-[#ffffff] font-semibold">12%</span></span>
+              </div>
+            </Card>
+
+            {/* Preview Monitor */}
+            <Card className="relative overflow-hidden" id="rl-prev-monitor">
+              <div className="absolute top-6 left-6 bg-[#BF0000] text-white px-4 py-3 text-sm font-bold rounded-lg shadow-lg z-10">
+                PREVIEW
+              </div>
+              <div className="flex items-center justify-center h-full bg-gradient-to-br from-zinc-900 to-zinc-950">
+                <div className="text-center">
+                  <div className="w-28 h-28 bg-gradient-to-br from-zinc-700 to-zinc-900 rounded-full flex items-center justify-center mb-6 mx-auto">
+                    <Monitor className="w-16 h-16 text-zinc-400" />
+                  </div>
+                  <p className="text-2xl text-[#ffffff] font-bold">프리뷰</p>
+                  <p className="text-base text-zinc-400 mt-2">Ready to go live</p>
+                </div>
+              </div>
+              <div className="absolute bottom-6 left-6 right-6 flex justify-between text-sm text-zinc-400">
+                <span>Next: <span className="text-[#ffffff] font-semibold">Scene 2</span></span>
+                <span>GPU: <span className="text-[#ffffff] font-semibold">8%</span></span>
+              </div>
+            </Card>
+          </div>
+
+          {/* Enhanced Transition Controls */}
+          <Card className="p-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-6">
+                <h3 className="text-xl font-bold text-[#ffffff]">Transition Controls</h3>
+                <div className="flex space-x-3">
+                  <Button variant="secondary" size="lg">
+                    <Zap className="w-5 h-5" />
+                    CUT
+                  </Button>
+                  <Button variant="secondary" size="lg">
+                    <RotateCw className="w-5 h-5" />
+                    FADE
+                  </Button>
+                  <Button variant="secondary" size="lg">
+                    <ArrowRight className="w-5 h-5" />
+                    SLIDE
+                  </Button>
+                </div>
+              </div>
+              <div className="flex items-center space-x-6">
+                <label className="text-base text-[#ffffff] font-semibold">Duration:</label>
+                <input 
+                  type="range" 
+                  min="100" 
+                  max="2000" 
+                  defaultValue="500" 
+                  className="w-40"
+                />
+                <span className="text-base text-zinc-400 font-mono font-semibold">500ms</span>
+              </div>
+            </div>
+          </Card>
+
+          {/* Enhanced Scene Panel */}
+          <Card className="p-8" id="rl-studio-scene-list">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-[#ffffff]">Scenes</h3>
+              <div className="flex space-x-3">
+                <Button size="md" variant="ghost">
+                  <Plus className="w-5 h-5 mr-2" />
+                  Add Scene
+                </Button>
+                <Button size="md" variant="ghost">
+                  <Settings className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+            <div className="grid grid-cols-4 gap-6">
+              {scenes.map((scene, index) => (
+                <div
+                  key={scene.id}
+                  className={`p-6 rounded-lg border-2 cursor-pointer transition-all transform hover:scale-105 ${
+                    selectedScene === index 
+                      ? 'border-[#BF0000] bg-[#BF0000]/10 shadow-lg shadow-[#BF0000]/25' 
+                      : 'border-zinc-800 bg-zinc-950 hover:border-zinc-700'
+                  }`}
+                  onClick={() => setSelectedScene(index)}
+                >
+                  <div className="aspect-video bg-black rounded mb-4 flex items-center justify-center">
+                    <Monitor className="w-10 h-10 text-zinc-400" />
+                  </div>
+                  <div className="font-bold text-[#ffffff] text-base mb-2">{scene.name}</div>
+                  <div className="text-sm text-zinc-400">{scene.sources} sources • {scene.preset}</div>
+                  {selectedScene === index && (
+                    <div className="mt-3 flex justify-center">
+                      <Tag color="red" size="sm">ACTIVE</Tag>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+
+        {/* Right Side - Enhanced Controls */}
+        <div className="col-span-4 space-y-8">
+          {/* Enhanced Sources Stack */}
+          <Card className="p-8" id="rl-studio-source-stack">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-[#ffffff]">Sources</h3>
+              <Button size="md" variant="ghost">
+                <Plus className="w-5 h-5 mr-2" />
+                Add
+              </Button>
+            </div>
+            <div className="space-y-4">
+              {sources.map(source => (
+                <div key={source.id} className="flex items-center space-x-4 p-4 rounded-lg bg-zinc-950 hover:bg-zinc-900 transition-colors border border-zinc-900">
+                  <button 
+                    onClick={() => setSources(sources.map(s => s.id === source.id ? {...s, visible: !s.visible} : s))}
+                    className={`p-2 rounded ${source.visible ? 'text-[#ffffff]' : 'text-zinc-500'}`}
+                  >
+                    {source.visible ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                  </button>
+                  <button 
+                    onClick={() => setSources(sources.map(s => s.id === source.id ? {...s, locked: !s.locked} : s))}
+                    className={`p-2 rounded ${source.locked ? 'text-[#ffffff]' : 'text-zinc-500'}`}
+                  >
+                    {source.locked ? <Lock className="w-5 h-5" /> : <Unlock className="w-5 h-5" />}
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-[#ffffff] text-base truncate">{source.name}</div>
+                    <div className="text-sm text-zinc-400">{source.device}</div>
+                  </div>
+                  <Button size="sm" variant="ghost">
+                    <Settings className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Enhanced Audio Mixer */}
+          <Card className="p-8" id="rl-studio-mixer">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-[#ffffff]">Audio Mixer</h3>
+              <Button size="md" variant="ghost">
+                <Headphones className="w-5 h-5" />
+              </Button>
+            </div>
+            <div className="space-y-6">
+              {sources.filter(s => s.type === 'camera' || s.type === 'audio').map(source => (
+                <div key={source.id} className="space-y-4 p-4 bg-zinc-950 rounded-lg border border-zinc-900">
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-bold text-[#ffffff]">{source.name}</span>
+                    <div className="flex items-center space-x-3">
+                      <button onClick={() => setSources(sources.map(s => s.id === source.id ? {...s, muted: !s.muted} : s))}>
+                        {source.muted ? <VolumeX className="w-5 h-5 text-[#ffffff]" /> : <Volume2 className="w-5 h-5 text-[#ffffff]" />}
+                      </button>
+                      <span className="text-sm text-zinc-400 w-10 text-center font-semibold">{source.volume}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="100" 
+                      value={source.volume}
+                      onChange={(e) => setSources(sources.map(s => s.id === source.id ? {...s, volume: parseInt(e.target.value)} : s))}
+                      className="flex-1 h-3 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                  {/* Audio level meter simulation */}
+                  <div className="flex space-x-1 h-3">
+                    {[...Array(20)].map((_, i) => (
+                      <div 
+                        key={i} 
+                        className={`flex-1 rounded ${
+                          i < (source.volume / 5) ? 'bg-[#BF0000]' : 'bg-zinc-800'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Enhanced Effects Panel */}
+          <Card className="p-8" id="rl-studio-effects">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-[#ffffff]">Effects & Overlays</h3>
+              <Button size="md" variant="ghost">
+                <Star className="w-5 h-5" />
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Button size="lg" variant="ghost" className="flex-col h-24 py-4">
+                <Type className="w-6 h-6 mb-2" />
+                <span className="text-sm font-semibold">Caption</span>
+              </Button>
+              <Button size="lg" variant="ghost" className="flex-col h-24 py-4">
+                <Timer className="w-6 h-6 mb-2" />
+                <span className="text-sm font-semibold">Banner</span>
+              </Button>
+              <Button size="lg" variant="ghost" className="flex-col h-24 py-4">
+                <Star className="w-6 h-6 mb-2" />
+                <span className="text-sm font-semibold">Watermark</span>
+              </Button>
+              <Button size="lg" variant="ghost" className="flex-col h-24 py-4">
+                <Image className="w-6 h-6 mb-2" />
+                <span className="text-sm font-semibold">Sticker</span>
+              </Button>
+              <Button size="lg" variant="ghost" className="flex-col h-24 py-4">
+                <Filter className="w-6 h-6 mb-2" />
+                <span className="text-sm font-semibold">Filter</span>
+              </Button>
+              <Button size="lg" variant="ghost" className="flex-col h-24 py-4">
+                <Zap className="w-6 h-6 mb-2" />
+                <span className="text-sm font-semibold">Animation</span>
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Dashboard Layout
+  const DashboardLayout = () => (
+    <div className="p-10 space-y-10 bg-black min-h-screen">
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-bold text-[#ffffff]">Dashboard</h1>
+        <div className="flex items-center space-x-4">
+          <Button variant="secondary" size="lg">
+            <RefreshCw className="w-5 h-5 mr-2" />
+            Refresh
+          </Button>
+          <Button variant="primary" size="lg" onClick={() => setCurrentRoute('/studio')}>
+            <Play className="w-5 h-5 mr-2" />
+            Go to Studio
+          </Button>
+        </div>
+      </div>
+      
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <Card className="p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-zinc-400 font-semibold">Total Viewers</p>
+              <p className="text-4xl font-bold text-[#ffffff]">{analyticsData.totalViewers.toLocaleString()}</p>
+            </div>
+            <Users className="w-10 h-10 text-[#ffffff]" />
+          </div>
+          <div className="mt-6 flex items-center text-base">
+            <TrendingUp className="w-5 h-5 text-[#ffffff] mr-2" />
+            <span className="text-[#ffffff] font-bold">+12.5%</span>
+            <span className="text-zinc-400 ml-2">vs last week</span>
+          </div>
+        </Card>
+
+        <Card className="p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-zinc-400 font-semibold">Revenue</p>
+              <p className="text-4xl font-bold text-[#ffffff]">₩{analyticsData.revenue.toLocaleString()}</p>
+            </div>
+            <DollarSign className="w-10 h-10 text-[#ffffff]" />
+          </div>
+          <div className="mt-6 flex items-center text-base">
+            <TrendingUp className="w-5 h-5 text-[#ffffff] mr-2" />
+            <span className="text-[#ffffff] font-bold">+28.3%</span>
+            <span className="text-zinc-400 ml-2">vs last week</span>
+          </div>
+        </Card>
+
+        <Card className="p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-zinc-400 font-semibold">Avg Watch Time</p>
+              <p className="text-4xl font-bold text-[#ffffff]">{analyticsData.avgWatchTime}</p>
+            </div>
+            <Clock className="w-10 h-10 text-[#ffffff]" />
+          </div>
+          <div className="mt-6 flex items-center text-base">
+            <TrendingUp className="w-5 h-5 text-[#ffffff] mr-2" />
+            <span className="text-[#ffffff] font-bold">+5.2%</span>
+            <span className="text-zinc-400 ml-2">vs last week</span>
+          </div>
+        </Card>
+
+        <Card className="p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-zinc-400 font-semibold">Engagement</p>
+              <p className="text-4xl font-bold text-[#ffffff]">{analyticsData.engagement}%</p>
+            </div>
+            <Heart className="w-10 h-10 text-[#ffffff]" />
+          </div>
+          <div className="mt-6 flex items-center text-base">
+            <TrendingUp className="w-5 h-5 text-[#ffffff] mr-2" />
+            <span className="text-[#ffffff] font-bold">+3.7%</span>
+            <span className="text-zinc-400 ml-2">vs last week</span>
+          </div>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <Card className="p-10">
+        <h2 className="text-2xl font-bold text-[#ffffff] mb-8">Quick Start</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="p-8 bg-gradient-to-br from-[#BF0000] to-[#990000] rounded-lg text-white">
+            <Play className="w-10 h-10 mb-6 text-white" />
+            <h3 className="text-xl font-bold mb-4 text-white">Start Live Stream</h3>
+            <p className="text-red-100 text-base mb-6">Begin broadcasting to your audience</p>
+            <Button variant="secondary" size="lg" onClick={() => setCurrentRoute('/studio')}>
+              <Play className="w-5 h-5 mr-2" />
+              Go Live
+            </Button>
+          </div>
+          
+          <div className="p-8 bg-zinc-950 rounded-lg text-white border border-zinc-900">
+            <Settings className="w-10 h-10 mb-6 text-[#ffffff]" />
+            <h3 className="text-xl font-bold mb-4 text-[#ffffff]">Setup Stream</h3>
+            <p className="text-zinc-300 text-base mb-6">Configure your broadcast settings</p>
+            <Button variant="secondary" size="lg" onClick={() => setCurrentRoute('/broadcast')}>
+              <Settings className="w-5 h-5 mr-2" />
+              Setup
+            </Button>
+          </div>
+          
+          <div className="p-8 bg-zinc-950 rounded-lg text-white border border-zinc-900">
+            <BarChart3 className="w-10 h-10 mb-6 text-[#ffffff]" />
+            <h3 className="text-xl font-bold mb-4 text-[#ffffff]">View Analytics</h3>
+            <p className="text-zinc-300 text-base mb-6">Check your performance metrics</p>
+            <Button variant="secondary" size="lg" onClick={() => setCurrentRoute('/analytics')}>
+              <BarChart3 className="w-5 h-5 mr-2" />
+              Analytics
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Recent Streams */}
+      <Card className="p-10">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold text-[#ffffff]">Recent Broadcasts</h2>
+          <Button variant="ghost" size="md">
+            <ExternalLink className="w-5 h-5 mr-2" />
+            View All
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[1, 2, 3].map(i => (
+            <Card key={i} className="p-8 hover:bg-zinc-950 transition-colors cursor-pointer">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-bold text-[#ffffff] text-lg">Live Stream #{i}</h3>
+                <Tag color="red" size="md">Completed</Tag>
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between text-base">
+                  <span className="text-zinc-400 font-semibold">Duration:</span>
+                  <span className="text-white font-semibold">2h 34m</span>
+                </div>
+                <div className="flex justify-between text-base">
+                  <span className="text-zinc-400 font-semibold">Peak Viewers:</span>
+                  <span className="text-white font-semibold">1,{234 + i * 100} viewers</span>
+                </div>
+                <div className="flex justify-between text-base">
+                  <span className="text-zinc-400 font-semibold">Revenue:</span>
+                  <span className="text-[#ffffff] font-semibold">₩{(125000 + i * 25000).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-base">
+                  <span className="text-zinc-400 font-semibold">Engagement:</span>
+                  <span className="text-[#ffffff] font-semibold">{78 + i}%</span>
+                </div>
+              </div>
+              <Button size="md" variant="ghost" className="w-full mt-6">
+                <BarChart3 className="w-5 h-5 mr-2" />
+                View Details
+              </Button>
+            </Card>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+
+  // Broadcast Management Layout
+  const BroadcastLayout = () => (
+    <div className="p-10 space-y-10 bg-black min-h-screen">
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-bold text-[#ffffff]">방송 관리</h1>
+        <div className="flex items-center space-x-4">
+          <Button variant="secondary" size="lg">
+            <Settings className="w-5 h-5 mr-2" />
+            설정
+          </Button>
+          <Button variant="primary" size="lg">
+            <Save className="w-5 h-5 mr-2" />
+            저장
+          </Button>
+        </div>
+      </div>
+
+      {/* Stream Configuration */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <Card className="p-8">
+          <h2 className="text-2xl font-bold text-[#ffffff] mb-8">스트림 설정</h2>
+          <div className="space-y-6">
+            <Select
+              label="해상도"
+              options={[
+                { value: "1920x1080", label: "1920x1080 (Full HD)" },
+                { value: "1280x720", label: "1280x720 (HD)" },
+                { value: "854x480", label: "854x480 (SD)" }
+              ]}
+              value={settings.video.resolution}
+            />
+            
+            <Select
+              label="프레임 레이트"
+              options={[
+                { value: "60", label: "60 FPS" },
+                { value: "30", label: "30 FPS" },
+                { value: "24", label: "24 FPS" }
+              ]}
+              value={settings.video.fps}
+            />
+            
+            <TextField
+              label="비트레이트 (kbps)"
+              type="number"
+              value={settings.video.bitrate}
+              placeholder="2500"
+            />
+            
+            <Select
+              label="인코더"
+              options={[
+                { value: "x264", label: "x264 (CPU)" },
+                { value: "nvenc", label: "NVENC (GPU)" },
+                { value: "qsv", label: "Quick Sync (Intel)" }
+              ]}
+              value={settings.video.encoder}
+            />
+          </div>
+        </Card>
+
+        <Card className="p-8">
+          <h2 className="text-2xl font-bold text-[#ffffff] mb-8">오디오 설정</h2>
+          <div className="space-y-6">
+            <Select
+              label="샘플 레이트"
+              options={[
+                { value: "48000", label: "48000 Hz" },
+                { value: "44100", label: "44100 Hz" },
+                { value: "22050", label: "22050 Hz" }
+              ]}
+              value={settings.audio.sampleRate}
+            />
+            
+            <TextField
+              label="오디오 비트레이트 (kbps)"
+              type="number"
+              value={settings.audio.bitrate}
+              placeholder="128"
+            />
+            
+            <Select
+              label="채널"
+              options={[
+                { value: "stereo", label: "스테레오" },
+                { value: "mono", label: "모노" }
+              ]}
+              value={settings.audio.channels}
+            />
+            
+            <div className="space-y-4">
+              <Switch
+                checked={settings.audio.suppressNoise}
+                onChange={(val) => setSettings({...settings, audio: {...settings.audio, suppressNoise: val}})}
+                label="노이즈 억제"
+              />
+              <Switch
+                checked={settings.audio.gainControl}
+                onChange={(val) => setSettings({...settings, audio: {...settings.audio, gainControl: val}})}
+                label="게인 자동 조절"
+              />
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Platform Management */}
+      <Card className="p-10">
+        <h2 className="text-2xl font-bold text-[#ffffff] mb-8">플랫폼 연결</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {platforms.map(platform => (
+            <Card key={platform.name} className="p-6 bg-zinc-950">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                  <span className="text-3xl">{platform.icon}</span>
+                  <div>
+                    <h3 className="text-xl font-bold text-[#ffffff]">{platform.name}</h3>
+                    <p className="text-sm text-zinc-400">
+                      {platform.connected ? '연결됨' : '연결되지 않음'}
+                    </p>
+                  </div>
+                </div>
+                <Button 
+                  variant={platform.connected ? "success" : "primary"} 
+                  size="md"
+                >
+                  {platform.connected ? '연결됨' : '연결하기'}
+                </Button>
+              </div>
+              
+              {platform.connected && (
+                <div className="space-y-4">
+                  <TextField
+                    label="스트림 키"
+                    value={platform.streamKey}
+                    type="password"
+                    placeholder="***************"
+                  />
+                  <div className="flex justify-between text-sm">
+                    <span className="text-zinc-400">시청자:</span>
+                    <span className="text-[#ffffff] font-semibold">{platform.viewers.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-zinc-400">상태:</span>
+                    <Tag color={platform.status === 'live' ? 'red' : 'green'} size="sm">
+                      {platform.status === 'live' ? 'LIVE' : 'Ready'}
+                    </Tag>
+                  </div>
+                </div>
+              )}
+            </Card>
+          ))}
+        </div>
+      </Card>
+
+      {/* Advanced Settings */}
+      <Card className="p-10">
+        <h2 className="text-2xl font-bold text-[#ffffff] mb-8">고급 설정</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold text-[#ffffff]">스트림 옵션</h3>
+            <Switch
+              checked={settings.stream.lowLatency}
+              onChange={(val) => setSettings({...settings, stream: {...settings.stream, lowLatency: val}})}
+              label="초저지연 모드"
+            />
+            <Switch
+              checked={settings.stream.multiStream}
+              onChange={(val) => setSettings({...settings, stream: {...settings.stream, multiStream: val}})}
+              label="멀티 플랫폼 동시 송출"
+            />
+            <Switch
+              checked={settings.stream.autoRecord}
+              onChange={(val) => setSettings({...settings, stream: {...settings.stream, autoRecord: val}})}
+              label="자동 녹화"
+            />
+            <Switch
+              checked={settings.stream.autoReconnect}
+              onChange={(val) => setSettings({...settings, stream: {...settings.stream, autoReconnect: val}})}
+              label="자동 재연결"
+            />
+          </div>
+          
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold text-[#ffffff]">알림 설정</h3>
+            <Switch
+              checked={settings.notifications.newFollower}
+              onChange={(val) => setSettings({...settings, notifications: {...settings.notifications, newFollower: val}})}
+              label="새 팔로워 알림"
+            />
+            <Switch
+              checked={settings.notifications.donations}
+              onChange={(val) => setSettings({...settings, notifications: {...settings.notifications, donations: val}})}
+              label="후원 알림"
+            />
+            <Switch
+              checked={settings.notifications.chatMentions}
+              onChange={(val) => setSettings({...settings, notifications: {...settings.notifications, chatMentions: val}})}
+              label="채팅 멘션 알림"
+            />
+            <Switch
+              checked={settings.notifications.systemAlerts}
+              onChange={(val) => setSettings({...settings, notifications: {...settings.notifications, systemAlerts: val}})}
+              label="시스템 경고 알림"
+            />
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+
+  // Chat Management Layout
+  const ChatLayout = () => (
+    <div className="p-10 space-y-10 bg-black min-h-screen">
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-bold text-[#ffffff]">채팅 관리</h1>
+        <div className="flex items-center space-x-4">
+          <Button variant="secondary" size="lg">
+            <Filter className="w-5 h-5 mr-2" />
+            필터
+          </Button>
+          <Button variant="primary" size="lg">
+            <Settings className="w-5 h-5 mr-2" />
+            채팅 설정
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        {/* Chat Stream */}
+        <div className="lg:col-span-2">
+          <Card className="p-8 h-[700px] flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-[#ffffff]">실시간 채팅</h2>
+              <div className="flex items-center space-x-4">
+                <Tag color="red" size="md">{chatMessages.length} 메시지</Tag>
+                <Button size="sm" variant="ghost">
+                  <Pause className="w-4 h-4 mr-2" />
+                  일시정지
+                </Button>
+              </div>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto space-y-4 mb-6">
+              {chatMessages.map(msg => (
+                <div key={msg.id} className="flex items-start space-x-4 p-4 bg-zinc-950 rounded-lg hover:bg-zinc-900 transition-colors">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#BF0000] to-[#990000] rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-bold text-white">{msg.user[0]}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <span className="font-bold text-[#ffffff] text-base">{msg.user}</span>
+                      <span className="text-lg">{msg.avatar}</span>
+                      <Tag color="gray" size="xs">{msg.platform}</Tag>
+                      <span className="text-sm text-zinc-400">{msg.time}</span>
+                    </div>
+                    <p className="text-base text-zinc-300">{msg.message}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button size="xs" variant="ghost">
+                      <Heart className="w-4 h-4" />
+                    </Button>
+                    <Button size="xs" variant="ghost">
+                      <MessageCircle className="w-4 h-4" />
+                    </Button>
+                    <Button size="xs" variant="ghost">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="border-t border-zinc-900 pt-6">
+              <div className="flex space-x-4">
+                <input 
+                  type="text"
+                  placeholder="채팅에 참여하세요..."
+                  className="flex-1 px-4 py-3 bg-black border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:border-[#BF0000] focus:outline-none text-base"
+                />
+                <Button size="md" variant="primary">
+                  <Send className="w-5 h-5 mr-2" />
+                  전송
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Chat Controls */}
+        <div className="space-y-8">
+          <Card className="p-8">
+            <h3 className="text-xl font-bold text-[#ffffff] mb-6">채팅 통계</h3>
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-400">총 메시지</span>
+                <span className="text-[#ffffff] font-bold text-xl">{analyticsData.chatMessages.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-400">분당 메시지</span>
+                <span className="text-[#ffffff] font-bold text-xl">23</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-400">활성 시청자</span>
+                <span className="text-[#ffffff] font-bold text-xl">156</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-400">신규 팔로워</span>
+                <span className="text-[#ffffff] font-bold text-xl">12</span>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-8">
+            <h3 className="text-xl font-bold text-[#ffffff] mb-6">모더레이션</h3>
+            <div className="space-y-4">
+              <Button variant="secondary" size="md" block>
+                <Shield className="w-5 h-5 mr-2" />
+                슬로우 모드 (30초)
+              </Button>
+              <Button variant="secondary" size="md" block>
+                <Eye className="w-5 h-5 mr-2" />
+                팔로워 전용 채팅
+              </Button>
+              <Button variant="secondary" size="md" block>
+                <Filter className="w-5 h-5 mr-2" />
+                욕설 필터 활성화
+              </Button>
+              <Button variant="danger" size="md" block>
+                <X className="w-5 h-5 mr-2" />
+                채팅 비활성화
+              </Button>
+            </div>
+          </Card>
+
+          <Card className="p-8">
+            <h3 className="text-xl font-bold text-[#ffffff] mb-6">빠른 응답</h3>
+            <div className="space-y-3">
+              {[
+                "안녕하세요! 라이브 방송에 오신 것을 환영합니다!",
+                "상품 문의는 채팅으로 남겨주세요",
+                "구독과 좋아요 부탁드립니다!",
+                "다음 상품으로 넘어가겠습니다"
+              ].map((msg, i) => (
+                <Button key={i} variant="ghost" size="sm" className="w-full text-left justify-start">
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  <span className="truncate">{msg}</span>
+                </Button>
+              ))}
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Commerce Layout
+  const CommerceLayout = () => (
+    <div className="p-10 space-y-10 bg-black min-h-screen">
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-bold text-[#ffffff]">라이브 커머스</h1>
+        <div className="flex items-center space-x-4">
+          <Button variant="secondary" size="lg">
+            <Upload className="w-5 h-5 mr-2" />
+            상품 업로드
+          </Button>
+          <Button variant="primary" size="lg">
+            <Plus className="w-5 h-5 mr-2" />
+            새 상품 추가
+          </Button>
+        </div>
+      </div>
+
+      {/* Sales Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <Card className="p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-zinc-400 font-semibold">총 매출</p>
+              <p className="text-3xl font-bold text-[#ffffff]">₩{analyticsData.revenue.toLocaleString()}</p>
+            </div>
+            <DollarSign className="w-8 h-8 text-[#ffffff]" />
+          </div>
+        </Card>
+        
+        <Card className="p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-zinc-400 font-semibold">판매된 상품</p>
+              <p className="text-3xl font-bold text-[#ffffff]">{products.reduce((sum, p) => sum + p.sales, 0)}</p>
+            </div>
+            <Package className="w-8 h-8 text-[#ffffff]" />
+          </div>
+        </Card>
+        
+        <Card className="p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-zinc-400 font-semibold">평균 주문가</p>
+              <p className="text-3xl font-bold text-[#ffffff]">₩89,000</p>
+            </div>
+            <BarChart3 className="w-8 h-8 text-[#ffffff]" />
+          </div>
+        </Card>
+        
+        <Card className="p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-zinc-400 font-semibold">전환율</p>
+              <p className="text-3xl font-bold text-[#ffffff]">12.3%</p>
+            </div>
+            <TrendingUp className="w-8 h-8 text-[#ffffff]" />
+          </div>
+        </Card>
+      </div>
+
+      {/* Product Management */}
+      <Card className="p-10">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold text-[#ffffff]">상품 관리</h2>
+          <div className="flex items-center space-x-4">
+            <Button variant="ghost" size="md">
+              <Filter className="w-5 h-5 mr-2" />
+              필터
+            </Button>
+            <Button variant="ghost" size="md">
+              <Search className="w-5 h-5 mr-2" />
+              검색
+            </Button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {products.map(product => (
+            <Card key={product.id} className="p-6 bg-zinc-950 hover:bg-zinc-900 transition-colors">
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-16 h-16 bg-black rounded-lg flex items-center justify-center text-4xl">
+                  {product.image}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    size="sm" 
+                    variant={product.status === 'active' ? "success" : "secondary"}
+                  >
+                    {product.status === 'active' ? 'ON SALE' : 'OFF'}
+                  </Button>
+                  <Button size="sm" variant="ghost">
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-bold text-[#ffffff] text-lg mb-2">{product.name}</h3>
+                  <Tag color="gray" size="sm">{product.category}</Tag>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl font-bold text-[#ffffff]">₩{product.price.toLocaleString()}</span>
+                  <span className="text-sm text-zinc-400 line-through">₩{product.originalPrice.toLocaleString()}</span>
+                  <Tag color="red" size="sm">
+                    {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
+                  </Tag>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-zinc-400">판매량:</span>
+                    <span className="text-[#ffffff] font-semibold ml-2">{product.sales}</span>
+                  </div>
+                  <div>
+                    <span className="text-zinc-400">매출:</span>
+                    <span className="text-[#ffffff] font-semibold ml-2">₩{(product.price * product.sales).toLocaleString()}</span>
+                  </div>
+                </div>
+                
+                <div className="flex space-x-2">
+                  <Button size="sm" variant="ghost" className="flex-1">
+                    <Edit className="w-4 h-4 mr-2" />
+                    편집
+                  </Button>
+                  <Button size="sm" variant="primary" className="flex-1">
+                    <Zap className="w-4 h-4 mr-2" />
+                    강조
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+          
+          {/* Add New Product Card */}
+          <Card className="p-6 bg-zinc-950 border-2 border-dashed border-zinc-700 hover:border-[#BF0000] transition-colors cursor-pointer">
+            <div className="flex flex-col items-center justify-center h-full text-center py-8">
+              <Plus className="w-12 h-12 text-[#ffffff] mb-4" />
+              <h3 className="text-lg font-bold text-[#ffffff] mb-2">새 상품 추가</h3>
+              <p className="text-zinc-400">클릭하여 새로운 상품을 추가하세요</p>
+            </div>
+          </Card>
+        </div>
+      </Card>
+    </div>
+  );
+
+  // Analytics Layout
+  const AnalyticsLayout = () => (
+    <div className="p-10 space-y-10 bg-black min-h-screen">
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-bold text-[#ffffff]">분석 및 통계</h1>
+        <div className="flex items-center space-x-4">
+          <Select
+            options={[
+              { value: "7d", label: "최근 7일" },
+              { value: "30d", label: "최근 30일" },
+              { value: "90d", label: "최근 90일" }
+            ]}
+          />
+          <Button variant="secondary" size="lg">
+            <Download className="w-5 h-5 mr-2" />
+            리포트 다운로드
+          </Button>
+        </div>
+      </div>
+
+      {/* Key Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <Card className="p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-zinc-400 font-semibold">총 시청 시간</p>
+              <p className="text-3xl font-bold text-[#ffffff]">2,847h</p>
+            </div>
+            <Clock className="w-8 h-8 text-[#ffffff]" />
+          </div>
+          <div className="mt-4 flex items-center text-sm">
+            <TrendingUp className="w-4 h-4 text-green-400 mr-1" />
+            <span className="text-green-400 font-semibold">+15.3%</span>
+            <span className="text-zinc-400 ml-1">vs 지난주</span>
+          </div>
+        </Card>
+
+        <Card className="p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-zinc-400 font-semibold">새 구독자</p>
+              <p className="text-3xl font-bold text-[#ffffff]">1,243</p>
+            </div>
+            <UserPlus className="w-8 h-8 text-[#ffffff]" />
+          </div>
+          <div className="mt-4 flex items-center text-sm">
+            <TrendingUp className="w-4 h-4 text-green-400 mr-1" />
+            <span className="text-green-400 font-semibold">+28.7%</span>
+            <span className="text-zinc-400 ml-1">vs 지난주</span>
+          </div>
+        </Card>
+
+        <Card className="p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-zinc-400 font-semibold">평균 동시 시청자</p>
+              <p className="text-3xl font-bold text-[#ffffff]">156</p>
+            </div>
+            <Users className="w-8 h-8 text-[#ffffff]" />
+          </div>
+          <div className="mt-4 flex items-center text-sm">
+            <TrendingUp className="w-4 h-4 text-green-400 mr-1" />
+            <span className="text-green-400 font-semibold">+8.2%</span>
+            <span className="text-zinc-400 ml-1">vs 지난주</span>
+          </div>
+        </Card>
+
+        <Card className="p-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-base text-zinc-400 font-semibold">클릭률</p>
+              <p className="text-3xl font-bold text-[#ffffff]">3.2%</p>
+            </div>
+            <MousePointer className="w-8 h-8 text-[#ffffff]" />
+          </div>
+          <div className="mt-4 flex items-center text-sm">
+            <TrendingUp className="w-4 h-4 text-green-400 mr-1" />
+            <span className="text-green-400 font-semibold">+2.1%</span>
+            <span className="text-zinc-400 ml-1">vs 지난주</span>
+          </div>
+        </Card>
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <Card className="p-8">
+          <h2 className="text-2xl font-bold text-[#ffffff] mb-8">시청자 추이</h2>
+          <div className="h-64 flex items-center justify-center bg-zinc-950 rounded-lg">
+            <div className="text-center">
+              <LineChart className="w-16 h-16 text-[#ffffff] mx-auto mb-4" />
+              <p className="text-zinc-400">차트 데이터 로딩 중...</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-8">
+          <h2 className="text-2xl font-bold text-[#ffffff] mb-8">수익 분석</h2>
+          <div className="h-64 flex items-center justify-center bg-zinc-950 rounded-lg">
+            <div className="text-center">
+              <BarChart className="w-16 h-16 text-[#ffffff] mx-auto mb-4" />
+              <p className="text-zinc-400">차트 데이터 로딩 중...</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Detailed Statistics */}
+      <Card className="p-10">
+        <h2 className="text-2xl font-bold text-[#ffffff] mb-8">상세 통계</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-zinc-800">
+                <th className="text-left py-4 px-6 text-[#ffffff] font-semibold">날짜</th>
+                <th className="text-left py-4 px-6 text-[#ffffff] font-semibold">시청자</th>
+                <th className="text-left py-4 px-6 text-[#ffffff] font-semibold">시간</th>
+                <th className="text-left py-4 px-6 text-[#ffffff] font-semibold">수익</th>
+                <th className="text-left py-4 px-6 text-[#ffffff] font-semibold">참여도</th>
+              </tr>
+            </thead>
+            <tbody>
+              {analyticsData.dailyStats.map((stat, i) => (
+                <tr key={i} className="border-b border-zinc-900 hover:bg-zinc-950">
+                  <td className="py-4 px-6 text-white">{stat.date}</td>
+                  <td className="py-4 px-6 text-[#ffffff] font-semibold">{stat.viewers.toLocaleString()}</td>
+                  <td className="py-4 px-6 text-white">{stat.duration}</td>
+                  <td className="py-4 px-6 text-[#ffffff] font-semibold">₩{stat.revenue.toLocaleString()}</td>
+                  <td className="py-4 px-6">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-16 bg-zinc-800 rounded-full h-2">
+                        <div 
+                          className="bg-[#BF0000] h-2 rounded-full" 
+                          style={{width: `${Math.random() * 100}%`}}
+                        />
+                      </div>
+                      <span className="text-white text-sm">{(Math.random() * 100).toFixed(1)}%</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+
+  // Settings Layout
+  const SettingsLayout = () => (
+    <div className="p-10 space-y-10 bg-black min-h-screen">
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-bold text-[#ffffff]">설정</h1>
+        <div className="flex items-center space-x-4">
+          <Button variant="secondary" size="lg">
+            <RefreshCw className="w-5 h-5 mr-2" />
+            초기화
+          </Button>
+          <Button variant="primary" size="lg">
+            <Save className="w-5 h-5 mr-2" />
+            저장
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        {/* General Settings */}
+        <Card className="p-8">
+          <h2 className="text-2xl font-bold text-[#ffffff] mb-8">일반 설정</h2>
+          <div className="space-y-6">
+            <TextField
+              label="스튜디오 이름"
+              value="라쿠텐 라이브 스튜디오"
+              placeholder="스튜디오 이름을 입력하세요"
+            />
+            
+            <Select
+              label="언어"
+              options={[
+                { value: "ko", label: "한국어" },
+                { value: "en", label: "English" },
+                { value: "ja", label: "日本語" }
+              ]}
+            />
+            
+            <Select
+              label="테마"
+              options={[
+                { value: "dark", label: "다크 모드" },
+                { value: "light", label: "라이트 모드" },
+                { value: "auto", label: "자동" }
+              ]}
+            />
+            
+            <div className="space-y-4">
+              <Switch
+                checked={true}
+                onChange={() => {}}
+                label="시작 시 자동 실행"
+              />
+              <Switch
+                checked={false}
+                onChange={() => {}}
+                label="최소화 시 트레이로 이동"
+              />
+              <Switch
+                checked={true}
+                onChange={() => {}}
+                label="자동 업데이트 확인"
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* Account Settings */}
+        <Card className="p-8">
+          <h2 className="text-2xl font-bold text-[#ffffff] mb-8">계정 설정</h2>
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4 p-6 bg-zinc-950 rounded-lg">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#BF0000] to-[#990000] rounded-full flex items-center justify-center">
+                <User className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-[#ffffff] text-lg">라쿠텐 스트리머</h3>
+                <p className="text-zinc-400">rakuten.streamer@email.com</p>
+                <Tag color="red" size="sm">Pro Plan</Tag>
+              </div>
+              <Button variant="ghost" size="md">
+                <Edit className="w-5 h-5 mr-2" />
+                편집
+              </Button>
+            </div>
+            
+            <TextField
+              label="닉네임"
+              value="라쿠텐 스트리머"
+              placeholder="닉네임을 입력하세요"
+            />
+            
+            <div>
+              <label className="block text-sm font-medium text-[#ffffff] mb-3">프로필 소개</label>
+              <textarea 
+                className="w-full h-24 px-4 py-3 bg-black border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:border-[#BF0000] focus:ring-2 focus:ring-[#BF0000]/20 focus:outline-none resize-none"
+                placeholder="자신을 소개해주세요"
+                defaultValue="라이브 커머스 전문 스트리머입니다."
+              />
+            </div>
+            
+            <div className="space-y-4">
+              <Switch
+                checked={true}
+                onChange={() => {}}
+                label="프로필 공개"
+              />
+              <Switch
+                checked={false}
+                onChange={() => {}}
+                label="이메일 알림 수신"
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* Performance Settings */}
+        <Card className="p-8">
+          <h2 className="text-2xl font-bold text-[#ffffff] mb-8">성능 설정</h2>
+          <div className="space-y-6">
+            <Select
+              label="CPU 사용량 제한"
+              options={[
+                { value: "low", label: "낮음 (50%)" },
+                { value: "medium", label: "보통 (75%)" },
+                { value: "high", label: "높음 (100%)" }
+              ]}
+            />
+            
+            <Select
+              label="메모리 사용량"
+              options={[
+                { value: "2gb", label: "2GB" },
+                { value: "4gb", label: "4GB" },
+                { value: "8gb", label: "8GB" }
+              ]}
+            />
+            
+            <div className="space-y-4">
+              <Switch
+                checked={true}
+                onChange={() => {}}
+                label="하드웨어 가속 사용"
+              />
+              <Switch
+                checked={false}
+                onChange={() => {}}
+                label="백그라운드에서 인코딩"
+              />
+              <Switch
+                checked={true}
+                onChange={() => {}}
+                label="성능 모니터링"
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* Security Settings */}
+        <Card className="p-8">
+          <h2 className="text-2xl font-bold text-[#ffffff] mb-8">보안 설정</h2>
+          <div className="space-y-6">
+            <Button variant="secondary" size="lg" block>
+              <Shield className="w-5 h-5 mr-2" />
+              비밀번호 변경
+            </Button>
+            
+            <Button variant="secondary" size="lg" block>
+              <Smartphone className="w-5 h-5 mr-2" />
+              2단계 인증 설정
+            </Button>
+            
+            <div className="space-y-4">
+              <Switch
+                checked={true}
+                onChange={() => {}}
+                label="로그인 알림"
+              />
+              <Switch
+                checked={false}
+                onChange={() => {}}
+                label="의심스러운 활동 차단"
+              />
+              <Switch
+                checked={true}
+                onChange={() => {}}
+                label="세션 자동 만료"
+              />
+            </div>
+            
+            <div className="pt-6 border-t border-zinc-800">
+              <Button variant="danger" size="md">
+                <Power className="w-5 h-5 mr-2" />
+                모든 기기에서 로그아웃
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+
+  // Plugins Layout
+  const PluginsLayout = () => (
+    <div className="p-10 space-y-10 bg-black min-h-screen">
+      <div className="flex items-center justify-between">
+        <h1 className="text-4xl font-bold text-[#ffffff]">플러그인</h1>
+        <div className="flex items-center space-x-4">
+          <Button variant="secondary" size="lg">
+            <Search className="w-5 h-5 mr-2" />
+            플러그인 검색
+          </Button>
+          <Button variant="primary" size="lg">
+            <Upload className="w-5 h-5 mr-2" />
+            플러그인 업로드
+          </Button>
+        </div>
+      </div>
+
+      {/* Plugin Categories */}
+      <div className="flex space-x-4 overflow-x-auto pb-4">
+        {['전체', '인기', '방송 도구', '채팅', '커머스', '분석', '엔터테인먼트'].map(category => (
+          <Button key={category} variant="ghost" size="md" className="whitespace-nowrap">
+            {category}
+          </Button>
+        ))}
+      </div>
+
+      {/* Installed Plugins */}
+      <Card className="p-10">
+        <h2 className="text-2xl font-bold text-[#ffffff] mb-8">설치된 플러그인</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[
+            { name: "채팅봇 AI", desc: "AI 기반 자동 응답 시스템", status: "active", icon: "🤖" },
+            { name: "상품 자동 태그", desc: "방송 중 상품 자동 태깅", status: "active", icon: "🏷️" },
+            { name: "소셜 미디어 연동", desc: "SNS 자동 포스팅", status: "inactive", icon: "📱" },
+            { name: "실시간 번역", desc: "다국어 채팅 번역", status: "active", icon: "🌐" }
+          ].map((plugin, i) => (
+            <Card key={i} className="p-6 bg-zinc-950">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-4xl">{plugin.icon}</div>
+                <Switch
+                  checked={plugin.status === 'active'}
+                  onChange={() => {}}
+                />
+              </div>
+              <h3 className="font-bold text-[#ffffff] text-lg mb-2">{plugin.name}</h3>
+              <p className="text-zinc-400 text-sm mb-4">{plugin.desc}</p>
+              <div className="flex space-x-2">
+                <Button size="sm" variant="ghost" className="flex-1">
+                  <Settings className="w-4 h-4 mr-2" />
+                  설정
+                </Button>
+                <Button size="sm" variant="ghost">
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </Card>
+
+      {/* Available Plugins */}
+      <Card className="p-10">
+        <h2 className="text-2xl font-bold text-[#ffffff] mb-8">추천 플러그인</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[
+            { name: "음성 변조기", desc: "실시간 음성 변조 효과", rating: 4.8, downloads: "1.2K", icon: "🎵" },
+            { name: "화면 효과", desc: "다양한 화면 전환 효과", rating: 4.6, downloads: "890", icon: "✨" },
+            { name: "게임 오버레이", desc: "게임 정보 실시간 표시", rating: 4.9, downloads: "2.1K", icon: "🎮" },
+            { name: "후원 알림", desc: "커스텀 후원 알림 시스템", rating: 4.7, downloads: "756", icon: "💰" },
+            { name: "날씨 위젯", desc: "실시간 날씨 정보 표시", rating: 4.3, downloads: "543", icon: "🌤️" },
+            { name: "QR 코드 생성기", desc: "상품 링크 QR 코드 생성", rating: 4.5, downloads: "432", icon: "📱" }
+          ].map((plugin, i) => (
+            <Card key={i} className="p-6 bg-zinc-950 hover:bg-zinc-900 transition-colors">
+              <div className="text-4xl mb-4">{plugin.icon}</div>
+              <h3 className="font-bold text-[#ffffff] text-lg mb-2">{plugin.name}</h3>
+              <p className="text-zinc-400 text-sm mb-4">{plugin.desc}</p>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                  <span className="text-white text-sm">{plugin.rating}</span>
+                </div>
+                <span className="text-zinc-400 text-sm">{plugin.downloads} 다운로드</span>
+              </div>
+              <Button size="md" variant="primary" block>
+                <Download className="w-4 h-4 mr-2" />
+                설치
+              </Button>
+            </Card>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+
+  // Enhanced Floating Panels
+  const FloatingChatPanel = () => chatVisible && (
+    <Card className="fixed bottom-8 right-8 w-[420px] h-[550px] flex flex-col shadow-2xl z-40" id="rl-float-chat">
+      <div className="flex items-center justify-between p-6 border-b border-zinc-900">
+        <div className="flex items-center space-x-3">
+          <MessageSquare className="w-6 h-6 text-[#ffffff]" />
+          <h3 className="font-bold text-[#ffffff] text-lg">Live Chat</h3>
+          <Tag color="red" size="md">{chatMessages.length}</Tag>
+        </div>
+        <div className="flex items-center space-x-3">
+          <Button size="sm" variant="ghost">
+            <Settings className="w-5 h-5" />
+          </Button>
+          <button onClick={() => setChatVisible(false)} className="text-zinc-400 hover:text-white">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+      <div className="flex-1 p-6 overflow-y-auto space-y-4">
+        {chatMessages.map(msg => (
+          <div key={msg.id} className="flex space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#BF0000] to-[#990000] rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-sm font-bold text-white">{msg.user[0]}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center space-x-2 mb-2">
+                <span className="font-bold text-[#ffffff] text-base">{msg.user}</span>
+                <span className="text-lg">{msg.avatar}</span>
+                <Tag color="gray" size="xs">{msg.platform}</Tag>
+                <span className="text-sm text-zinc-400">{msg.time}</span>
+              </div>
+              <p className="text-base text-zinc-300">{msg.message}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="p-6 border-t border-zinc-900">
+        <div className="flex space-x-3">
+          <input 
+            type="text"
+            placeholder="메시지 입력..."
+            className="flex-1 px-4 py-3 bg-black border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:border-[#BF0000] focus:outline-none text-base"
+          />
+          <Button size="md" variant="primary">
+            <MessageCircle className="w-5 h-5 mr-2" />
+            Send
+          </Button>
+        </div>
+      </div>
+    </Card>
+  );
+
+  const FloatingCommercePanel = () => commerceVisible && (
+    <Card className="fixed bottom-8 left-8 w-[420px] h-[550px] flex flex-col shadow-2xl z-40" id="rl-float-commerce">
+      <div className="flex items-center justify-between p-6 border-b border-zinc-900">
+        <div className="flex items-center space-x-3">
+          <ShoppingCart className="w-6 h-6 text-[#ffffff]" />
+          <h3 className="font-bold text-[#ffffff] text-lg">Live Commerce</h3>
+          <Tag color="red" size="md">₩{products.reduce((sum, p) => sum + (p.status === 'active' ? p.price * p.sales : 0), 0).toLocaleString()}</Tag>
+        </div>
+        <button onClick={() => setCommerceVisible(false)} className="text-zinc-400 hover:text-white">
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+      <div className="flex-1 p-6 overflow-y-auto space-y-4">
+        {products.map(product => (
+          <div key={product.id} className="flex items-center space-x-4 p-4 bg-zinc-950 rounded-lg border border-zinc-900">
+            <div className="w-16 h-16 bg-black rounded-lg flex items-center justify-center text-3xl">
+              {product.image}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-bold text-[#ffffff] text-base truncate">{product.name}</div>
+              <div className="text-base text-zinc-300">₩{product.price.toLocaleString()}</div>
+              <div className="text-sm text-zinc-400">{product.sales} sold</div>
+            </div>
+            <Button 
+              size="md" 
+              variant={product.status === 'active' ? "primary" : "secondary"}
+            >
+              {product.status === 'active' ? 'ON' : 'OFF'}
+            </Button>
+          </div>
+        ))}
+      </div>
+      <div className="p-6 border-t border-zinc-900">
+        <Button variant="primary" size="md" block>
+          <Plus className="w-5 h-5 mr-2" />
+          상품 추가
+        </Button>
+      </div>
+    </Card>
+  );
+
+  // Route renderer
+  const renderCurrentRoute = () => {
+    switch (currentRoute) {
+      case '/studio':
+        return <StudioLayout />;
+      case '/dashboard':
+        return <DashboardLayout />;
+      case '/broadcast':
+        return <BroadcastLayout />;
+      case '/chat':
+        return <ChatLayout />;
+      case '/commerce':
+        return <CommerceLayout />;
+      case '/analytics':
+        return <AnalyticsLayout />;
+      case '/settings':
+        return <SettingsLayout />;
+      case '/plugins':
+        return <PluginsLayout />;
+      default:
+        return <DashboardLayout />;
+    }
+  };
+
+  return (
+    <div className="h-screen flex flex-col bg-black font-sans">
+      {/* Enhanced Global Navigation */}
+      <nav className="h-18 bg-zinc-950 border-b border-zinc-900 flex items-center justify-between px-8">
+        <div className="flex items-center space-x-10">
+          {/* Enhanced Logo */}
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#BF0000] to-[#990000] rounded-lg flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-xl">R</span>
+            </div>
+            <div>
+              <span className="font-bold text-2xl text-[#ffffff]">Rakuten Live</span>
+              <div className="text-sm text-white font-semibold">Professional Studio</div>
+            </div>
+          </div>
+
+          {/* Enhanced Navigation Items */}
+          <div className="flex items-center space-x-2">
+            {navigation.map(item => {
+              const Icon = item.icon;
+              const isActive = currentRoute.startsWith(item.path);
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => setCurrentRoute(item.path)}
+                  className={`flex flex-col items-center justify-center px-4 py-3 rounded-lg transition-all transform hover:scale-105 ${
+                    isActive 
+                      ? 'bg-gradient-to-r from-[#BF0000] to-[#990000] text-white font-bold shadow-lg' 
+                      : 'text-zinc-300 hover:bg-zinc-900 hover:text-white'
+                  }`}
+                >
+                  <Icon className="w-6 h-6 mb-1" />
+                  <span className="text-xs font-semibold">{item.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          {/* Enhanced Control Toggles */}
+          <button 
+            onClick={() => setChatVisible(!chatVisible)}
+            className={`p-4 rounded-lg transition-all ${
+              chatVisible 
+                ? 'bg-[#BF0000] text-white shadow-lg' 
+                : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white'
+            }`}
+          >
+            <MessageSquare className="w-6 h-6" />
+          </button>
+
+          <button 
+            onClick={() => setCommerceVisible(!commerceVisible)}
+            className={`p-4 rounded-lg transition-all ${
+              commerceVisible 
+                ? 'bg-[#BF0000] text-white shadow-lg' 
+                : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white'
+            }`}
+          >
+            <ShoppingCart className="w-6 h-6" />
+          </button>
+
+          {/* Notifications with badge */}
+          <button className="relative p-4 rounded-lg bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all">
+            <Bell className="w-6 h-6" />
+            <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#BF0000] rounded-full"></div>
+          </button>
+
+          {/* Enhanced User Menu */}
+          <button className="flex items-center space-x-4 p-4 rounded-lg bg-zinc-900 hover:bg-zinc-800 transition-all">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#BF0000] to-[#990000] rounded-full flex items-center justify-center">
+              <User className="w-5 h-5 text-white" />
+            </div>
+            <div className="text-left">
+              <div className="text-base font-bold text-[#ffffff]">Streamer</div>
+              <div className="text-sm text-zinc-400 font-semibold">Pro Plan</div>
+            </div>
+            <ChevronDown className="w-5 h-5 text-zinc-400" />
+          </button>
+        </div>
+      </nav>
+
+      {/* Enhanced Status Alerts */}
+      {isLive && (
+        <Alert tone="success" className="mx-8 mt-6">
+          <div className="flex items-center justify-between w-full">
+            <span className="font-semibold">🔴 라이브 방송 중 - 시청자 {analyticsData.totalViewers.toLocaleString()}명</span>
+            <span className="text-sm font-semibold">수익: ₩{analyticsData.revenue.toLocaleString()}</span>
+          </div>
+        </Alert>
+      )}
+
+      {networkHealth.drops > 1 && (
+        <Alert tone="warning" className="mx-8 mt-3">
+          <span className="font-semibold">⚠️ 네트워크 불안정 감지 - 화질 자동 최적화 중 ({networkHealth.bitrate} kbps → {networkHealth.bitrate - 500} kbps)</span>
+        </Alert>
+      )}
+
+      {isRecording && (
+        <Alert tone="info" className="mx-8 mt-3">
+          <span className="font-semibold">🔴 녹화 중 - 로컬 저장소: 85% 사용 중</span>
+        </Alert>
+      )}
+
+      {/* Main Content with all routes */}
+      {renderCurrentRoute()}
+
+      {/* Go Live Modal */}
+      <GoLiveModal />
+
+      {/* Enhanced Floating Panels */}
+      <FloatingChatPanel />
+      <FloatingCommercePanel />
+
+      {/* Enhanced Keyboard Shortcuts Help */}
+      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-zinc-950 border border-zinc-800 text-white px-6 py-3 rounded-lg shadow-xl">
+        <div className="text-sm text-center">
+          <span className="text-zinc-400 font-semibold">단축키:</span>
+          <span className="mx-3 text-[#ffffff] font-bold">S</span><span className="text-zinc-400">=송출</span>
+          <span className="mx-3 text-[#ffffff] font-bold">R</span><span className="text-zinc-400">=녹화</span>
+          <span className="mx-3 text-[#ffffff] font-bold">1-9</span><span className="text-zinc-400">=장면</span>
+          <span className="mx-3 text-[#ffffff] font-bold">B</span><span className="text-zinc-400">=배너</span>
+          <span className="mx-3 text-[#ffffff] font-bold">C</span><span className="text-zinc-400">=자막</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+        // 앱 렌더링
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(RakutenLiveStudio));
+    </script>
+</body>
+</html>
